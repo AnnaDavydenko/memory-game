@@ -6,6 +6,8 @@ import {IState} from "./common/types";
 import {Dispatch} from "redux";
 import { Menu, Rules, Settings, Score, GamePage, ChooseCardsThemes } from "./containers";
 import imageArray from "./utils/preloadImages";
+// @ts-ignore
+import fonSound from './assets/sounds/fon.mp3';
 
 const App = () => {
     const [loading, setLoading] = useState(false);
@@ -32,22 +34,25 @@ const App = () => {
 
     return (
         <>
-            <Router>
-            <div>
-                <Header/>
-                {(loading) ? (<Loader/>) : (
-                    <Switch>
-                        <Route path='/' exact component={Menu}/>
-                        <Route path='/chooseCards' component={ChooseCardsThemes}/>
-                        <Route path='/gameRules' component={Rules}/>
-                        <Route path='/score' component={Score}/>
-                        <Route path='/settings' component={Settings}/>
-                        <Route path='/game' component={GamePage}/>
-                    </Switch>
-                )}
-                <Footer/>
-            </div>
-        </Router>
+            {(loading) ? (<Loader/>) : (
+                <Router>
+                    <div>
+                        <Header/>
+
+                        <Switch>
+                            <Route path='/' exact component={Menu}/>
+                            <Route path='/chooseCards' component={ChooseCardsThemes}/>
+                            <Route path='/gameRules' component={Rules}/>
+                            <Route path='/score' component={Score}/>
+                            <Route path='/settings' component={Settings}/>
+                            <Route path='/game' component={GamePage}/>
+                        </Switch>
+
+                        <Footer/>
+                        <audio id="megaSound" src={fonSound} />
+                    </div>
+                </Router>
+            )}
         </>
     );
 };

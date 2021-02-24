@@ -60,6 +60,7 @@ const useStyles = makeStyles({
         width: '100px',
         '& img': {
             width: '55px',
+            paddingRight: '0.5rem',
         },
     },
     linkGitHub: {

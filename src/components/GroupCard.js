@@ -36,7 +36,6 @@ GroupCard.defaultProps = {
 const useStyles = makeStyles({
     themeBox: {
         width: '30%',
-        minHeight: '15rem',
         borderRadius: '2px',
         cursor: 'pointer',
         transition: 'all 0.2s',

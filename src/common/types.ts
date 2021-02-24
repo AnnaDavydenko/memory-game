@@ -1,5 +1,18 @@
 import {IOffersState} from "../reducers/memory";
 
+export interface ISettings {
+    fullScreen: boolean;
+    enableSounds: boolean;
+    enableMusic: boolean;
+    volumeSounds: number;
+    volumeMusic: number | number[];
+}
+
+
+
+
+
+
 export interface IAction {
     type: string;
     payload?: any;

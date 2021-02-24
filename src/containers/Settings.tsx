@@ -1,14 +1,19 @@
-import React, {FC, useState} from 'react';
-import {Link} from "react-router-dom";
+import React, {FC, useState, useCallback, useMemo} from 'react';
 import {makeStyles} from "@material-ui/core";
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Switch, { SwitchClassKey, SwitchProps } from '@material-ui/core/Switch';
 import Grid from '@material-ui/core/Grid';
-
 import Slider from '@material-ui/core/Slider';
 import VolumeDown from '@material-ui/icons/VolumeDown';
 import VolumeUp from '@material-ui/icons/VolumeUp';
 import classNames from "classnames";
+import LinkButton from "../components/LinkButton";
+import PlaySoundButton from "../components/PlaySoundButton";
+import Modal from "../components/Modal";
+import {Storage} from "../services/storage";
+import {ISettings} from "../common/types";
+
+
 
 interface Styles extends Partial<Record<SwitchClassKey, string>> {
     focusVisible?: string;
@@ -19,35 +24,63 @@ interface Props extends SwitchProps {
 
 const Settings: FC = () => {
     const classes = useStyles();
-    const [state, setState] = useState({isChecked: false});
+
+    const storage = useMemo(() => {
+	    return new Storage();
+    }, []);
+
+
     const [valueSound, setValueSound] = useState<number>(30);
-    const [valueMusic, setValueMusic] = useState<number>(30);
-   
-    const handleChangeFullScreen = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setState({ ...state, [event.target.name]: event.target.checked });
-    };
+    //const [valueMusic, setValueMusic] = useState<number>(30);
+    //
+    // const [fullScreenEnabled, setFullScreenEnabled] = useState<boolean>(false);
+    const [settings, setSettings] = useState<ISettings>(storage.getSettings());
+
+    const handleChangeFullScreen = useCallback((event: React.ChangeEvent<HTMLInputElement>, fullScreenValue) => {
+        if(fullScreenValue){
+            document.documentElement.requestFullscreen().catch(err => Promise.resolve(err));
+            settings.fullScreen = true;
+            setSettings(settings);
+        } else {
+            document.exitFullscreen().catch(err => Promise.resolve(err));
+            settings.fullScreen = false;
+            setSettings(settings);
+        }
+        storage.updateSettings(settings);
+    }, [settings]);
+
+
     const handleChangeVolumeSound = (event: any, newValue: number | number[]) => {
         setValueSound(newValue as number);
     };
-    const handleChangeVolumeMusic = (event: any, newValue: number | number[]) => {
-        setValueMusic(newValue as number);
-    };
+    const handleChangeVolumeMusic = useCallback((event: any, newValue: number | number[]) => {
+        const audio = document.querySelector("#megaSound") as HTMLAudioElement;
+        audio.volume = (newValue as number) / 100;
+        settings.volumeMusic = newValue as number;
+        setSettings(settings);
+        storage.updateSettings(settings);
+    },[settings]);
+
     return (
         <main>
-            <div className={classes.modalContainer} >
-                <div className={classes.modal}>
-                    <h2 className={classes.modalTitle}>Settings</h2>
+            <Modal title='Settings'>
                     <Grid container direction="column">
                         <Grid item className={classes.settingItem}>
                             <span className={classes.span}>Full Screen</span>
                             <IOSSwitch
-                                checked={state.isChecked}
+                                checked={settings.fullScreen}
                                 onChange={handleChangeFullScreen}
-                                name="isChecked"
+                                name="fullScreenValue"
                                 inputProps={{ 'aria-label': 'secondary checkbox' }}
                             />
                         </Grid>
-                        <Grid container spacing={2} className={classNames(classes.slider, classes.settingItem)}>
+
+                        <Grid item className={classes.settingItem}>
+                            <span className={classes.span}>Enable Music</span>
+                            <PlaySoundButton/>
+                        </Grid>
+
+                        <Grid container className={classNames(classes.slider, classes.settingItem)}>
                             <span className={classes.span}>Sounds</span>
                             <Grid item>
                                <VolumeDown />
@@ -59,83 +92,35 @@ const Settings: FC = () => {
                                 <VolumeUp />
                             </Grid>
                         </Grid>
-                        <Grid container spacing={2} className={classes.slider}>
+
+                        <Grid container className={classNames(classes.slider, classes.settingItem)}>
                             <span className={classes.span}>Music</span>
                             <Grid item>
                                 <VolumeDown />
                             </Grid>
                             <Grid item xs>
-                                <Slider value={valueMusic} onChange={handleChangeVolumeMusic} aria-labelledby="continuous-slider" />
+                                <Slider value={settings.volumeMusic} onChange={handleChangeVolumeMusic} aria-labelledby="continuous-slider" />
                             </Grid>
                             <Grid item>
                                 <VolumeUp />
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Link to={"/"} className={classes.button}>{"Back"}</Link>
-                </div>
-            </div>
+                    <LinkButton
+                        to={"/"} text={"Back"}>
+                    </LinkButton>
+            </Modal>
         </main>
     );
 };
 const useStyles = makeStyles({
-    modalContainer: {
-    marginTop: '4rem',
-    paddingBottom: '2rem',
-    height: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-},
-    modal: {
-    width: '500px',
-    minHeight: '300px',
-    background: '#fff',
-    padding: '1.5rem 2rem',
-    borderRadius: '5px',
-    boxShadow: '0 2rem 5rem 0 rgba(0, 0, 0, 0.2)',
-},
-    modalTitle: {
-    fontSize: '2.2rem',
-    display: 'flex',
-    justifyContent: 'center',
-    textTransform: 'uppercase',
-    fontFamily: 'Hachi Maru Pop',
-    color: '#3288dc',
-},
-    button: {
-    fontSize: '1.8rem',
-    padding: '1rem 7rem',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    alignItems: 'center',
-    backgroundImage: 'linear-gradient(120deg, #3a7bd5, #00d2ff)',
-    cursor: 'pointer',
-    transition: 'all 0.3s',
-    fontFamily: 'Reggae One',
-    width: '80%',
-    display: 'flex',
-    justifyContent: 'center',
-    margin: '0 auto',
-    '&:hover': {
-    transform: 'scale(1.1)',
-    boxShadow: '0 1rem 2rem 0 rgba(0, 0, 0, 0.2)',
-},
-    '&:focus': {
-    outline: 0,
-    boxShadow: '0 1rem 2rem 0 rgba(0, 0, 0, 0.2)',
-},
-    '&:active': {
-    transform: 'scale(1)',
-},
-},
     slider: {
         width: 200,
-
     },
     span: {
         fontFamily: 'Reggae One',
         color: '#3288dc',
+        paddingRight: '1.5rem',
     },
     settingItem: {
         display: 'flex',
