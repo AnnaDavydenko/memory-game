@@ -1,50 +1,56 @@
-import React, { useEffect } from "react";
+import React, {FC, useCallback, useEffect, useMemo, useState} from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import { GroupCard } from "../components";
-import useTheme from "../utils/useTheme";
 import LinkButton from "../components/LinkButton";
 import Modal from "../components/Modal";
+import {ISettings} from "../common/types";
+import {Storage} from "../services/storage";
 
-const ChooseCardsThemes = () => {
-    const [active, setActive] = useTheme("Robots", "Active");
+export const CARD_THEMES = {
+    ROBOTS: "Robots",
+    POKEMON: "Pokemon",
+    DOGS: "Dogs",
+};
+
+const ChooseCardsThemes:FC = () => {
+
     const classes = useStyles();
-    useEffect(() => {
-        if (active === "Robots") {
-            localStorage.setItem('Active', 'Robots');
-        } else if (active === "Pokemon") {
-            localStorage.setItem('Active', 'Pokemon');
-        } else {
-            localStorage.setItem('Active', 'Dogs');
-        }
-    }, [active]);
+
+    const storage = useMemo(() => {
+        return new Storage();
+    }, []);
+
+    const [settings, setSettings] = useState<ISettings>(storage.getSettings());
+
+    const handleChangeTheme = useCallback((theme: string) => () => {
+        settings.cardsTheme = theme;
+        setSettings({...settings});
+        storage.updateSettings(settings);
+    }, [settings, storage]);
 
     return (
         <main>
             <Modal title='Choose cards'>
-                    <div className={classes.cardsContainer} >
-                        <GroupCard
-                            type='Robots'
-                            imageWidth='80%'
-                            onClick={() => setActive("Robots")}
-                        />
-                        <GroupCard
-                            type='Pokemon'
-                            imageWidth='80%'
-                            onClick={() => setActive("Pokemon")}
-                        />
-                        <GroupCard
-                            type='Dogs'
-                            onClick={() => setActive("Dogs")}
-                        />
-                    </div>
-                    <div className='buttonsContainer'>
-                        <LinkButton
-                            to={"/"} text={"Back"}>
-                        </LinkButton>
-                        <LinkButton
-                            to={"/game"} text={"Start"}>
-                        </LinkButton>
-                    </div>
+                <div className={classes.cardsContainer} >
+                    <GroupCard
+                        type={CARD_THEMES.ROBOTS}
+                        onClick={handleChangeTheme(CARD_THEMES.ROBOTS)}
+                        classes={{image: classes.imageRoot}}
+                    />
+                    <GroupCard
+                        type={CARD_THEMES.POKEMON}
+                        onClick={handleChangeTheme(CARD_THEMES.POKEMON)}
+                        classes={{image: classes.imageRoot}}
+                    />
+                    <GroupCard
+                        type={CARD_THEMES.DOGS}
+                        onClick={handleChangeTheme(CARD_THEMES.DOGS)}
+                    />
+                </div>
+                <div className='buttonsContainer'>
+                    <LinkButton to={"/"} text={"Back"} />
+                    <LinkButton to={"/game"} text={"Start"} />
+                </div>
             </Modal>
         </main>
     );
@@ -62,6 +68,9 @@ const useStyles = makeStyles({
         width: '100%',
         display: 'flex',
         justifyContent: 'space-between',
+    },
+    imageRoot: {
+      width: "80%",
     },
 
 });

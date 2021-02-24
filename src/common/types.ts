@@ -5,11 +5,9 @@ export interface ISettings {
     enableSounds: boolean;
     enableMusic: boolean;
     volumeSounds: number;
+    cardsTheme: string;
     volumeMusic: number | number[];
 }
-
-
-
 
 
 
@@ -42,8 +40,6 @@ export interface IOfferData {
     };
     images: IImages;
 }
-
-
 
 export interface IState {
     offers: IOffersState;

@@ -1,5 +1,4 @@
-import React, {FC, useCallback, useState, useMemo} from "react";
-import {Link} from "react-router-dom";
+import React, {FC, useCallback, useState} from "react";
 import {makeStyles} from "@material-ui/core";
 // @ts-ignore
 import fonSound from '../assets/sounds/fon.mp3';
@@ -10,8 +9,6 @@ const PlaySoundButton: FC = () => {
 
     const [play, setPlay] = useState<boolean>(false);
     const classes = useStyles();
-
-    // const audio = new Audio(fonSound);
 
     const handlePlay = useCallback(() => {
         const audio = document.querySelector("#megaSound") as HTMLAudioElement;

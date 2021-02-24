@@ -1,33 +1,20 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { restartGame } from '../actions/actions';
+import React, {FC} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
-
-const ConnectedHeader = (props) => {
-	const { restart } = props;
+const Header: FC = () => {
     const classes = useStyles();
 	return (
         <Grid container
               justify="center"
-              alignItems="center"
-              className={classes.headerContainer}>
+              alignItems="center">
             <Grid container justify="center" >
                 <Typography variant="h1" className={classes.header}>Memory Game</Typography>
-            </Grid>
-            <Grid item >
-                    <button type="button" className={classes.button} onClick={restart}>Restart</button>
             </Grid>
         </Grid>
 	);
 };
-const mapDispatchToProps = dispatch => ({
-    restart: () => dispatch(restartGame()),
-});
-
-const Header = connect(null, mapDispatchToProps)(ConnectedHeader);
 
 const useStyles = makeStyles({
     header: {

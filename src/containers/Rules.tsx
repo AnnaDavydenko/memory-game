@@ -1,10 +1,10 @@
-import React from "react";
+import React, {FC} from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import { GiAlarmClock } from "react-icons/gi";
 import LinkButton from "../components/LinkButton";
 import Modal from "../components/Modal";
 
-const Rules = () => {
+const Rules:FC = () => {
     const classes = useStyles();
     return (
         <main>

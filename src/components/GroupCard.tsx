@@ -1,12 +1,19 @@
-import React from "react";
+import React, {FC} from "react";
+import classNames from "classnames";
 import { robot8 } from "../assets/images/robots";
 import { pokemon6 } from "../assets/images/pokemon";
 import { dog9 } from "../assets/images/dogs";
 import { makeStyles } from '@material-ui/core/styles';
 
+interface IGroupCardProps {
+    type: string;
+    onClick: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+    classes?: {[key: string]: string};
+}
 
-const GroupCard = ({ type, imageWidth, onClick }) => {
-    const classes = useStyles();
+const GroupCard:FC<IGroupCardProps> = (props: IGroupCardProps) => {
+    const { type, onClick, classes } = props;
+    const innerClasses = useStyles();
 
     let image = "";
 
@@ -19,19 +26,13 @@ const GroupCard = ({ type, imageWidth, onClick }) => {
     }
 
     return (
-        <div
-            onClick={onClick}
-            className={classes.themeBox}>
+        <div onClick={onClick} className={innerClasses.themeBox}>
             <div>
-                <img src={image} alt={type} width={imageWidth} />
+                <img src={image} alt={type} className={classNames(innerClasses.image, classes?.image)} />
             </div>
             <div>{type}</div>
         </div>
     );
-};
-
-GroupCard.defaultProps = {
-    imageWidth: "100%",
 };
 const useStyles = makeStyles({
     themeBox: {
@@ -40,10 +41,6 @@ const useStyles = makeStyles({
         cursor: 'pointer',
         transition: 'all 0.2s',
         textAlign: 'center',
-        '&img': {
-            borderTopLeftRadius: '2px',
-            borderTopRightRadius: '2px',
-        },
         '&:hover': {
             transform: 'scale(1.15)',
         },
@@ -51,6 +48,10 @@ const useStyles = makeStyles({
             transform: 'scale(1.15)',
         },
     },
-
+    image: {
+        borderTopLeftRadius: '2px',
+        borderTopRightRadius: '2px',
+        width: '100%',
+    }
 });
 export default GroupCard;

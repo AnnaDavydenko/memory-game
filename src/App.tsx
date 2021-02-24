@@ -9,8 +9,8 @@ import imageArray from "./utils/preloadImages";
 // @ts-ignore
 import fonSound from './assets/sounds/fon.mp3';
 
-const App = () => {
-    const [loading, setLoading] = useState(false);
+const App: FC = () => {
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         preloadImage();

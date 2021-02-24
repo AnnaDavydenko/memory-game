@@ -13,8 +13,6 @@ import Modal from "../components/Modal";
 import {Storage} from "../services/storage";
 import {ISettings} from "../common/types";
 
-
-
 interface Styles extends Partial<Record<SwitchClassKey, string>> {
     focusVisible?: string;
 }
@@ -31,88 +29,86 @@ const Settings: FC = () => {
 
 
     const [valueSound, setValueSound] = useState<number>(30);
-    //const [valueMusic, setValueMusic] = useState<number>(30);
-    //
+    // const [valueMusic, setValueMusic] = useState<number>(30);
     // const [fullScreenEnabled, setFullScreenEnabled] = useState<boolean>(false);
+
     const [settings, setSettings] = useState<ISettings>(storage.getSettings());
 
-    const handleChangeFullScreen = useCallback((event: React.ChangeEvent<HTMLInputElement>, fullScreenValue) => {
-        if(fullScreenValue){
-            document.documentElement.requestFullscreen().catch(err => Promise.resolve(err));
-            settings.fullScreen = true;
-            setSettings(settings);
+    const handleChangeFullScreen = useCallback((event: React.ChangeEvent<HTMLInputElement>, fullScreenValue: boolean) => {
+        if (fullScreenValue) {
+            document.documentElement.requestFullscreen();
         } else {
-            document.exitFullscreen().catch(err => Promise.resolve(err));
-            settings.fullScreen = false;
-            setSettings(settings);
+            document.exitFullscreen();
         }
+        settings.fullScreen = fullScreenValue;
+        setSettings({...settings});
         storage.updateSettings(settings);
-    }, [settings]);
+    }, [settings, storage]);
 
 
     const handleChangeVolumeSound = (event: any, newValue: number | number[]) => {
         setValueSound(newValue as number);
     };
+
     const handleChangeVolumeMusic = useCallback((event: any, newValue: number | number[]) => {
         const audio = document.querySelector("#megaSound") as HTMLAudioElement;
         audio.volume = (newValue as number) / 100;
         settings.volumeMusic = newValue as number;
-        setSettings(settings);
+        setSettings({ ...settings });
         storage.updateSettings(settings);
-    },[settings]);
+    },[settings, storage]);
 
     return (
         <main>
             <Modal title='Settings'>
-                    <Grid container direction="column">
-                        <Grid item className={classes.settingItem}>
-                            <span className={classes.span}>Full Screen</span>
-                            <IOSSwitch
-                                checked={settings.fullScreen}
-                                onChange={handleChangeFullScreen}
-                                name="fullScreenValue"
-                                inputProps={{ 'aria-label': 'secondary checkbox' }}
-                            />
-                        </Grid>
+                <Grid container direction="column">
+                    <Grid item className={classes.settingItem}>
+                        <span className={classes.span}>Full Screen</span>
+                        <IOSSwitch
+                            checked={settings.fullScreen}
+                            onChange={handleChangeFullScreen}
+                            name="fullScreenValue"
+                            inputProps={{ 'aria-label': 'secondary checkbox' }}
+                        />
+                    </Grid>
 
-                        <Grid item className={classes.settingItem}>
-                            <span className={classes.span}>Enable Music</span>
-                            <PlaySoundButton/>
-                        </Grid>
+                    <Grid item className={classes.settingItem}>
+                        <span className={classes.span}>Enable Music</span>
+                        <PlaySoundButton/>
+                    </Grid>
 
-                        <Grid container className={classNames(classes.slider, classes.settingItem)}>
-                            <span className={classes.span}>Sounds</span>
-                            <Grid item>
-                               <VolumeDown />
-                            </Grid>
-                            <Grid item xs>
-                                <Slider value={valueSound} onChange={handleChangeVolumeSound} aria-labelledby="continuous-slider" />
-                            </Grid>
-                            <Grid item>
-                                <VolumeUp />
-                            </Grid>
+                    <Grid container className={classNames(classes.slider, classes.settingItem)}>
+                        <span className={classes.span}>Sounds</span>
+                        <Grid item>
+                           <VolumeDown />
                         </Grid>
-
-                        <Grid container className={classNames(classes.slider, classes.settingItem)}>
-                            <span className={classes.span}>Music</span>
-                            <Grid item>
-                                <VolumeDown />
-                            </Grid>
-                            <Grid item xs>
-                                <Slider value={settings.volumeMusic} onChange={handleChangeVolumeMusic} aria-labelledby="continuous-slider" />
-                            </Grid>
-                            <Grid item>
-                                <VolumeUp />
-                            </Grid>
+                        <Grid item xs>
+                            <Slider value={valueSound} onChange={handleChangeVolumeSound} />
+                        </Grid>
+                        <Grid item>
+                            <VolumeUp />
                         </Grid>
                     </Grid>
-                    <LinkButton
-                        to={"/"} text={"Back"}>
-                    </LinkButton>
+
+                    <Grid container className={classNames(classes.slider, classes.settingItem)}>
+                        <span className={classes.span}>Music</span>
+                        <Grid item>
+                            <VolumeDown />
+                        </Grid>
+                        <Grid item xs>
+                            <Slider value={settings.volumeMusic} onChange={handleChangeVolumeMusic} aria-labelledby="continuous-slider" />
+                        </Grid>
+                        <Grid item>
+                            <VolumeUp />
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <LinkButton to={"/"} text={"Back"} />
             </Modal>
         </main>
     );
 };
+
 const useStyles = makeStyles({
     slider: {
         width: 200,

@@ -1,25 +1,25 @@
-import React from 'react';
+import React, {FC} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import RSSchool from '../assets/images/rs_school_js.svg';
 import { FaGithub } from "react-icons/fa";
 
-const Footer = () => {
+const Footer: FC = () => {
 
     const classes = useStyles({});
 
     return (
         <footer className={classes.footer}>
-        <div className={classes.linkGitHub}>
-            <span className={classes.footerIcon}><FaGithub /></span>
-            <a className={classes.link} href="https://github.com/AnnaDavydenko">Anna Davydenko</a>
-        </div>
+            <div className={classes.linkGitHub}>
+                <span className={classes.footerIcon}><FaGithub/></span>
+                <a className={classes.link} href="https://github.com/AnnaDavydenko">Anna Davydenko</a>
+            </div>
             <div>
-                        <div className={classes.linkSchool}>
-                            <a className={classes.link} href="https://rs.school/js/">
-                                <img src={RSSchool} alt="rs school logo"/>
-                            </a>
-                            <span> 2021</span>
-                        </div>
+                <div className={classes.linkSchool}>
+                    <a className={classes.link} href="https://rs.school/js/">
+                        <img src={RSSchool} alt="rs school logo"/>
+                    </a>
+                    <span> 2021</span>
+                </div>
             </div>
         </footer>
     );

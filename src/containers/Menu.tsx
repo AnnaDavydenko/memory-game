@@ -1,10 +1,9 @@
-import React from "react";
+import React, {FC} from "react";
 import Grid from '@material-ui/core/Grid';
 import LinkButton from "../components/LinkButton";
 import Modal from "../components/Modal";
 
-
-const Menu = () => {
+const Menu:FC = () => {
 
     return (
         <main>
