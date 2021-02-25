@@ -54,7 +54,7 @@ const useStyles = makeStyles({
         display: 'inline-block',
         borderRadius: '5px',
         "& .flipper": {
-            transition: '0.6s',
+            transition: '0.3s',
             transformStyle: 'preserve-3d',
             position: 'relative',
         }

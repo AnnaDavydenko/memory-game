@@ -1,8 +1,8 @@
 import React, {FC} from "react";
 import classNames from "classnames";
-import { robot8 } from "../assets/images/robots";
-import { pokemon6 } from "../assets/images/pokemon";
-import { dog9 } from "../assets/images/dogs";
+import { winter9 } from "../assets/images/winter";
+import { architecture9 } from "../assets/images/architecture";
+import { cat9 } from "../assets/images/cats";
 import { makeStyles } from '@material-ui/core/styles';
 
 interface IGroupCardProps {
@@ -17,12 +17,12 @@ const GroupCard:FC<IGroupCardProps> = (props: IGroupCardProps) => {
 
     let image = "";
 
-    if (type === "Pokemon") {
-        image = pokemon6;
-    } else if (type === "Dogs") {
-        image = dog9;
+    if (type === "Architecture") {
+        image = architecture9;
+    } else if (type === "Cats") {
+        image = cat9;
     } else {
-        image = robot8;
+        image = winter9;
     }
 
     return (
@@ -30,7 +30,7 @@ const GroupCard:FC<IGroupCardProps> = (props: IGroupCardProps) => {
             <div>
                 <img src={image} alt={type} className={classNames(innerClasses.image, classes?.image)} />
             </div>
-            <div>{type}</div>
+            <div className={innerClasses.typeText}>{type}</div>
         </div>
     );
 };
@@ -52,6 +52,11 @@ const useStyles = makeStyles({
         borderTopLeftRadius: '2px',
         borderTopRightRadius: '2px',
         width: '100%',
+    },
+    typeText: {
+        color: '#01c5f1',
+        fontFamily: 'Hachi Maru Pop',
+        marginTop: '0.5rem',
     }
 });
 export default GroupCard;

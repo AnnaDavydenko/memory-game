@@ -1,15 +1,16 @@
-import React, {FC, useCallback, useEffect, useMemo, useState} from "react";
+import React, {FC, useCallback, useMemo, useState} from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import { GroupCard } from "../components";
 import LinkButton from "../components/LinkButton";
 import Modal from "../components/Modal";
 import {ISettings} from "../common/types";
 import {Storage} from "../services/storage";
+import {Grid} from "@material-ui/core";
 
 export const CARD_THEMES = {
-    ROBOTS: "Robots",
-    POKEMON: "Pokemon",
-    DOGS: "Dogs",
+    WINTER: "Winter",
+    ARCHITECTURE: "Architecture",
+    CATS: "Cats",
 };
 
 const ChooseCardsThemes:FC = () => {
@@ -33,24 +34,25 @@ const ChooseCardsThemes:FC = () => {
             <Modal title='Choose cards'>
                 <div className={classes.cardsContainer} >
                     <GroupCard
-                        type={CARD_THEMES.ROBOTS}
-                        onClick={handleChangeTheme(CARD_THEMES.ROBOTS)}
+                        type={CARD_THEMES.ARCHITECTURE}
+                        onClick={handleChangeTheme(CARD_THEMES.ARCHITECTURE)}
                         classes={{image: classes.imageRoot}}
                     />
                     <GroupCard
-                        type={CARD_THEMES.POKEMON}
-                        onClick={handleChangeTheme(CARD_THEMES.POKEMON)}
+                        type={CARD_THEMES.CATS}
+                        onClick={handleChangeTheme(CARD_THEMES.CATS)}
                         classes={{image: classes.imageRoot}}
                     />
                     <GroupCard
-                        type={CARD_THEMES.DOGS}
-                        onClick={handleChangeTheme(CARD_THEMES.DOGS)}
+                        type={CARD_THEMES.WINTER}
+                        onClick={handleChangeTheme(CARD_THEMES.WINTER)}
+                        classes={{image: classes.imageRoot}}
                     />
                 </div>
-                <div className='buttonsContainer'>
-                    <LinkButton to={"/"} text={"Back"} />
+                <Grid container className='buttonsContainer'>
                     <LinkButton to={"/game"} text={"Start"} />
-                </div>
+                    <LinkButton to={"/"} text={"Back"} />
+                </Grid>
             </Modal>
         </main>
     );

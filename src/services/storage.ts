@@ -19,7 +19,7 @@ export class Storage {
       enableMusic: false,
       volumeSounds: 0.3,
       volumeMusic: 0.3,
-      cardsTheme: CARD_THEMES.ROBOTS,
+      cardsTheme: CARD_THEMES.WINTER,
     };
     return settings;
   }

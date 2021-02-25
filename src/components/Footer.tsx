@@ -31,7 +31,7 @@ const useStyles = makeStyles({
         bottom: 0,
         color: '#3288dc',
         width: '100%',
-        marginTop: '4rem',
+        marginTop: '3.5rem',
         display: 'flex',
         justifyContent: 'space-evenly',
         alignItems: 'center',

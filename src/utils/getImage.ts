@@ -1,17 +1,29 @@
-import { robot1, robot2, robot3, robot4, robot5, robot6, robot7, robot8 } from "../assets/images/robots";
-import { pokemon1, pokemon2, pokemon3, pokemon4, pokemon5, pokemon6, pokemon7, pokemon8 } from "../assets/images/pokemon";
-import { dog1, dog2, dog3, dog4, dog5, dog6, dog7, dog8 } from "../assets/images/dogs";
+import { winter1, winter2, winter3, winter4, winter5, winter6} from "../assets/images/winter";
+import { architecture1, architecture3, architecture4, architecture5, architecture6, architecture8 } from "../assets/images/architecture";
+import { cat1, cat3, cat4, cat5, cat6, cat8 } from "../assets/images/cats";
 
 const getImage = (type: string) => {
     let image = "";
 
     const store = {
-        "red": robot1,
-        "yellow": robot2,
-        "bulbasaur": pokemon1,
-        "charizard": pokemon2,
-        "lhasa": dog1,
-        "eskimo": dog2,
+        "sin": winter1,
+        "vet": winter2,
+        "yellow": winter3,
+        "sun": winter4,
+        "shar": winter5,
+        "bike": winter6,
+        "white": architecture1,
+        "blue": architecture3,
+        "york": architecture4,
+        "orange": architecture5,
+        "sad": architecture6,
+        "stairs": architecture8,
+        "siam": cat1,
+        "whcat": cat3,
+        "rusg": cat4,
+        "tree": cat5,
+        "kun": cat6,
+        "eyes": cat8,
     };
 
     return (store as any)[type];

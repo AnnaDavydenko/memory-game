@@ -2,7 +2,7 @@ import React from "react";
 import { GiBackstab, GiSandsOfTime, GiCardJoker, GiTrophy } from "react-icons/gi";
 import LinkButton from "../components/LinkButton";
 
-const BootstrapModal = (props) => {
+const BootstrapModal = () => {
     return (
         <div>
             {/*<div className="rodal__title">*/}

@@ -1,12 +1,13 @@
 import React, {useState, useEffect, useContext, useMemo} from "react";
-
-import { Board, Rodal } from "../components";
+import { Board, FinalModal } from "../components";
 import {CARD_THEMES} from "./ChooseCardsThemes";
 import {Storage} from "../services/storage";
 import {ISettings} from "../common/types";
 import {shuffle} from "../utils/gameUtils";
+import {createStyles, makeStyles, Theme} from "@material-ui/core";
 
 const GamePage = () => {
+    const classes = useStyles();
     const [flipped, setFlipped] = useState<number[]>([]);
     const [cards, setCards] = useState<any[]>([]);
     const [solved, setSolved] = useState<any[]>([]);
@@ -45,7 +46,6 @@ const GamePage = () => {
     }, [seconds, solved.length]);
 
     useEffect(() => {
-        // console.log(isRunning);
         if (isRunning) {
             const id = window.setInterval(
                 () => setSeconds((seconds) => seconds - 1),
@@ -83,7 +83,6 @@ const GamePage = () => {
 
             // if we get a match
             if (isMatch(id)) {
-                // ...solved = already solved | fliped[0] = first click | id = current clicked
                 setSolved([...solved, flipped[0], id]);
                 // Reset Cards
                 setFlipped([]);
@@ -119,16 +118,16 @@ const GamePage = () => {
         setSeconds(100);
         setIsRunning(true);
         setModalShow(false);
-    }
+    };
 
     return (
         <>
-            <main className='game__container'>
-                <div className='game__stats'>
-                    <div className='game__time'>Time: {seconds} sec</div>
-                    <div className='game__flips'>Flips: {flips}</div>
+            <main className={classes.gameContainer}>
+                <div className={classes.stats}>
+                    <span className={classes.timeAndFlips}>Time: {seconds} sec</span>
+                    <span className={classes.timeAndFlips}>Flips: {flips}</span>
                 </div>
-                <div className='game__cards-container'>
+                <div className={classes.cardsContainer}>
                     <Board
                         cards={cards}
                         flipped={flipped}
@@ -137,24 +136,72 @@ const GamePage = () => {
                         solved={solved}
                     />
                 </div>
-                <div>
-                    <Rodal visible={modalShow} onClose={() => setModalShow(false)} time={seconds} flips={flips} onPlayAgain={playAgain} victory={victory} />
-                </div>
+                {/*<div>*/}
+                {/*    <FinalModal visible={modalShow} onClose={() => setModalShow(false)} time={seconds} flips={flips} onPlayAgain={playAgain} victory={victory} />*/}
+                {/*</div>*/}
             </main>
         </>
     );
 };
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+    gameContainer:{
+        display: 'flex',
+        flexDirection: 'column',
 
+        paddingBottom: '1rem',
+        [theme.breakpoints.up("md")]: {
+            padding: '0 9rem',
+        },
+        [theme.breakpoints.up("sm")]: {
+            padding: '0 5rem',
+        },
+        [theme.breakpoints.down("sm")]: {
+            padding: '0 3rem',
+        },
+    },
+    stats:{
+        fontSize: '3.2rem',
+        color: '#fff',
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-between',
+    "& svg": {
+            verticalAlign: 'middle',
+            marginBottom: '10px',
+        }
+    },
+    timeAndFlips:{
+        color: '#01c5f1',
+        fontFamily: 'Hachi Maru Pop',
+        [theme.breakpoints.up("lg")]: {
+            fontSize: '3rem',
+        },
+        [theme.breakpoints.up("md")]: {
+            fontSize: '2rem',
+        },
+        [theme.breakpoints.down("sm")]: {
+            fontSize: '1.5rem',
+        }
+    },
+    cardsContainer:{
+        marginTop: '3rem',
+        display: 'flex',
+        justifyContent: 'center',
+    },
+
+    }),
+);
 const initDeck = (settings: ISettings) => {
     let id = 0;
     let cards: any[] = [];
 
-    if (CARD_THEMES.ROBOTS === settings.cardsTheme) {
-        cards = ["red", "yellow"]
-    } else if (CARD_THEMES.POKEMON === settings.cardsTheme) {
-        cards = ["bulbasaur", "charizard"]
+    if (CARD_THEMES.WINTER === settings.cardsTheme) {
+        cards = ['sin', 'vet', 'yellow', 'sun', 'shar', 'bike']
+    } else if (CARD_THEMES.ARCHITECTURE === settings.cardsTheme) {
+        cards = ['white','blue','york','orange','sad','stairs']
     } else {
-        cards = ["lhasa", "eskimo"];
+        cards = ['siam','whcat','rusg','tree','kun','eyes'];
     }
     cards = cards.reduce((acc: any, type: string) => {
         return [...acc, {id: id++, type}, {id: id++, type}];
