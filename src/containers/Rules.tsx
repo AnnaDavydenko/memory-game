@@ -31,7 +31,7 @@ const useStyles = makeStyles({
         fontFamily: 'Reggae One',
         color: '#3288dc',
         fontSize: "1.4rem",
-        padding: "1.5rem 0 0 0",
+        padding: "0 0 1.5rem 0",
         '& li': {
             padding: '0.5rem 0',
         },

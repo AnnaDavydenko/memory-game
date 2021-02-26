@@ -1,6 +1,7 @@
-import {memory} from './memory';
 import {combineReducers} from 'redux';
+import {settings} from "./settings";
 
 export const rootReducer = combineReducers({
-    memory: memory,
+    settings: settings,
 });
+

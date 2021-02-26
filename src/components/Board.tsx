@@ -59,45 +59,16 @@ const splitIntoHalf = (array: any[]) => {
     };
 };
 
-// declare module "@material-ui/core/styles/createBreakpoints"
-//     interface BreakpointOverrides {
-//         xss: true;
-//     },
-// };
-// const theme = createMuiTheme({
-//     breakpoints: {
-//         values: {
-//             xss: 320,
-//
-//         }
-//     }
-// });
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
+const useStyles = makeStyles({
     board:{
         display: 'flex',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
-
-        [theme.breakpoints.up("xl")]: {
-            width: '44%',
-        },
-        [theme.breakpoints.down("lg")]: {
-            width: '66%',
-        },
-        [theme.breakpoints.down("md")]: {
-            width: '80%',
-        },
-        [theme.breakpoints.down("sm")]: {
-            width: '100%',
-        },
-
     },
     gridItem:{
         textAlign: 'center',
     },
 
-    }),
-);
+});
 
 export default Board;

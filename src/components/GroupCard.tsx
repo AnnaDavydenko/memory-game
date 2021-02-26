@@ -4,6 +4,7 @@ import { winter9 } from "../assets/images/winter";
 import { architecture9 } from "../assets/images/architecture";
 import { cat9 } from "../assets/images/cats";
 import { makeStyles } from '@material-ui/core/styles';
+import {CARD_THEMES} from "../containers/ChooseCardsThemes";
 
 interface IGroupCardProps {
     type: string;
@@ -17,9 +18,9 @@ const GroupCard:FC<IGroupCardProps> = (props: IGroupCardProps) => {
 
     let image = "";
 
-    if (type === "Architecture") {
+    if (type === CARD_THEMES.ARCHITECTURE) {
         image = architecture9;
-    } else if (type === "Cats") {
+    } else if (type === CARD_THEMES.CATS) {
         image = cat9;
     } else {
         image = winter9;
@@ -36,15 +37,15 @@ const GroupCard:FC<IGroupCardProps> = (props: IGroupCardProps) => {
 };
 const useStyles = makeStyles({
     themeBox: {
-        width: '30%',
+        width: '80%',
         borderRadius: '2px',
         cursor: 'pointer',
         transition: 'all 0.2s',
         textAlign: 'center',
-        '&:hover': {
+        '&:active': {
             transform: 'scale(1.15)',
         },
-        '&:active': {
+        '&:hover': {
             transform: 'scale(1.15)',
         },
     },

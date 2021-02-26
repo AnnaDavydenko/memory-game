@@ -12,19 +12,36 @@ export const CARD_THEMES = {
     ARCHITECTURE: "Architecture",
     CATS: "Cats",
 };
+interface ICardItem {
+    id: string,
+    type: string,
+}
 
 const ChooseCardsThemes:FC = () => {
-
     const classes = useStyles();
-
     const storage = useMemo(() => {
         return new Storage();
     }, []);
 
     const [settings, setSettings] = useState<ISettings>(storage.getSettings());
+    const [activeCardId, setActiveCardId] = useState<string>("");
 
-    const handleChangeTheme = useCallback((theme: string) => () => {
-        settings.cardsTheme = theme;
+    const CARDS = useMemo( () => {
+        return [{
+            id: "123",
+            type: CARD_THEMES.ARCHITECTURE,
+        }, {
+            id: "456",
+            type: CARD_THEMES.CATS,
+        }, {
+            id: "789",
+            type: CARD_THEMES.WINTER,
+        },]
+    },[]);
+
+    const handleChangeTheme = useCallback((cardItem: ICardItem) => () => {
+        settings.cardsTheme = cardItem.type;
+        setActiveCardId(cardItem.id);
         setSettings({...settings});
         storage.updateSettings(settings);
     }, [settings, storage]);
@@ -33,21 +50,15 @@ const ChooseCardsThemes:FC = () => {
         <main>
             <Modal title='Choose cards'>
                 <div className={classes.cardsContainer} >
-                    <GroupCard
-                        type={CARD_THEMES.ARCHITECTURE}
-                        onClick={handleChangeTheme(CARD_THEMES.ARCHITECTURE)}
-                        classes={{image: classes.imageRoot}}
-                    />
-                    <GroupCard
-                        type={CARD_THEMES.CATS}
-                        onClick={handleChangeTheme(CARD_THEMES.CATS)}
-                        classes={{image: classes.imageRoot}}
-                    />
-                    <GroupCard
-                        type={CARD_THEMES.WINTER}
-                        onClick={handleChangeTheme(CARD_THEMES.WINTER)}
-                        classes={{image: classes.imageRoot}}
-                    />
+                 {CARDS.map((cardItem, index) => (
+                     <div key={`id-${index}`} className={(cardItem.id === activeCardId) ? classes.activeCard : undefined}>
+                     <GroupCard
+                         type={cardItem.type}
+                         onClick={handleChangeTheme(cardItem)}
+                         classes={{image: classes.imageRoot}}
+                     />
+                     </div>
+                 ))}
                 </div>
                 <Grid container className='buttonsContainer'>
                     <LinkButton to={"/game"} text={"Start"} />
@@ -64,6 +75,7 @@ const useStyles = makeStyles({
         width: '100%',
         display: 'flex',
         justifyContent: 'space-between',
+        marginBottom: '1.5rem',
     },
     buttonsContainer: {
         marginBottom: '1rem',
@@ -73,6 +85,12 @@ const useStyles = makeStyles({
     },
     imageRoot: {
       width: "80%",
+    },
+    activeCard: {
+        transform: 'scale(1.15)',
+    },
+    notActive: {
+        transform: 'none',
     },
 
 });

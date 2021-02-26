@@ -1,13 +1,18 @@
-import React, {FC} from "react";
+import React, {FC, useCallback, useRef, useState} from "react";
 import Grid from '@material-ui/core/Grid';
 import LinkButton from "../components/LinkButton";
 import Modal from "../components/Modal";
 
 const Menu:FC = () => {
+//todo
+    const handleSound = useCallback(() => {
+
+    }, []);
 
     return (
+
         <main>
-            <Modal title='Welcome'>
+            <Modal title='Welcome' >
                     <Grid container
                           direction="column"
                           justify="center"
@@ -30,4 +35,3 @@ const Menu:FC = () => {
     );
 };
 export default Menu;
-

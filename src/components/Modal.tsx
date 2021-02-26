@@ -40,6 +40,7 @@ const useStyles = makeStyles({
         textTransform: 'uppercase',
         fontFamily: 'Hachi Maru Pop',
         color: '#3288dc',
+        marginBottom:'1.5rem',
     },
 });
 export default Modal;

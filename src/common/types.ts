@@ -1,4 +1,6 @@
-import {IOffersState} from "../reducers/memory";
+import {ISettingsState} from "../reducers/settings";
+import {Simulate} from "react-dom/test-utils";
+import keyDown = Simulate.keyDown;
 
 export interface ISettings {
     fullScreen: boolean;
@@ -8,6 +10,12 @@ export interface ISettings {
     cardsTheme: string;
     volumeMusic: number | number[];
 }
+
+export interface IState {
+    settings: ISettingsState;
+}
+
+
 
 
 
@@ -41,6 +49,4 @@ export interface IOfferData {
     images: IImages;
 }
 
-export interface IState {
-    offers: IOffersState;
-}
+

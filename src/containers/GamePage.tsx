@@ -1,10 +1,12 @@
-import React, {useState, useEffect, useContext, useMemo} from "react";
+import React, {useState, useEffect, useContext, useMemo, useCallback} from "react";
 import { Board, FinalModal } from "../components";
 import {CARD_THEMES} from "./ChooseCardsThemes";
 import {Storage} from "../services/storage";
 import {ISettings} from "../common/types";
 import {shuffle} from "../utils/gameUtils";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
+import {Link} from "react-router-dom";
+import classNames from "classnames";
 
 const GamePage = () => {
     const classes = useStyles();
@@ -13,9 +15,7 @@ const GamePage = () => {
     const [solved, setSolved] = useState<any[]>([]);
     const [disabled, setDisabled] = useState(false);
     const [flips, setFlips] = useState(0);
-    const [seconds, setSeconds] = useState(100);
     const [isRunning, setIsRunning] = useState(true);
-    const [intervalId, setIntervalId] = useState<any>(null);
     const [modalShow, setModalShow] = useState(false);
     const [victory, setVictory] = useState(false);
 
@@ -36,27 +36,27 @@ const GamePage = () => {
     }, [solved]);
 
     useEffect(() => {
-        if (seconds === 0) {
-            setIsRunning(false);
+        // if (seconds === 0) {
+        //     setIsRunning(false);
             if (solved.length !== 16) {
                 setVictory(false);
             }
             setModalShow(true);
-        }
-    }, [seconds, solved.length]);
+        // }
+    }, [solved.length]);
 
-    useEffect(() => {
-        if (isRunning) {
-            const id = window.setInterval(
-                () => setSeconds((seconds) => seconds - 1),
-                1000
-            );
-            setIntervalId(id);
-        } else {
-            // Clear set Interval
-            window.clearInterval(intervalId);
-        }
-    }, [isRunning, intervalId]);
+    // useEffect(() => {
+    //     if (isRunning) {
+    //         const id = window.setInterval(
+    //             () => setSeconds((seconds) => seconds - 1),
+    //             1000
+    //         );
+    //         setIntervalId(id);
+    //     } else {
+    //         // Clear set Interval
+    //         window.clearInterval(intervalId);
+    //     }
+    // }, [isRunning, intervalId]);
 
     const onClick = (id: number) => {
         setDisabled(true);
@@ -115,7 +115,6 @@ const GamePage = () => {
         setSolved([]);
         setDisabled(false);
         setFlips(0);
-        setSeconds(100);
         setIsRunning(true);
         setModalShow(false);
     };
@@ -124,7 +123,7 @@ const GamePage = () => {
         <>
             <main className={classes.gameContainer}>
                 <div className={classes.stats}>
-                    <span className={classes.timeAndFlips}>Time: {seconds} sec</span>
+                    <Link to={"/game"}><span className={classes.timeAndFlips}>Restart Game</span></Link>
                     <span className={classes.timeAndFlips}>Flips: {flips}</span>
                 </div>
                 <div className={classes.cardsContainer}>
@@ -136,9 +135,9 @@ const GamePage = () => {
                         solved={solved}
                     />
                 </div>
-                {/*<div>*/}
-                {/*    <FinalModal visible={modalShow} onClose={() => setModalShow(false)} time={seconds} flips={flips} onPlayAgain={playAgain} victory={victory} />*/}
-                {/*</div>*/}
+                <div>
+                    {modalShow && <FinalModal flips={flips} victory={victory} />}
+                </div>
             </main>
         </>
     );

@@ -1,25 +1,45 @@
-import React, {FC} from "react";
-import {Link} from "react-router-dom";
+import React, {FC, useCallback, useRef} from "react";
+import { useHistory } from "react-router-dom";
 import {makeStyles} from "@material-ui/core";
+// @ts-ignore
+import buttonSound from "../assets/sounds/buttonSound.mp3";
+import {ISettings, IState} from "../common/types";
+import {connect} from "react-redux";
+
+
 
 interface ILinkProps {
     text: string;
     to: string;
 }
 
+
 const LinkButton: FC<ILinkProps> = (props: ILinkProps) => {
     const {text, to} = props;
     const classes = useStyles();
+    let history = useHistory();
+    const audioRef = useRef<any>();
+
+    const handleClick = useCallback(() => {
+        audioRef?.current?.play();
+        setTimeout(() => {
+            history.push(to);
+        }, 250);
+    }, [audioRef, history, to]);
+
     return (
-        <Link className={classes.button}
-            to={to} >
-            {text}
-        </Link>
+        <>
+            <button className={classes.button} onClick={handleClick}>
+                {text}
+            </button>
+            <audio ref={audioRef} src={buttonSound} />
+        </>
     );
 };
 const useStyles = makeStyles({
     button: {
-        marginTop:'1.5rem',
+
+        marginBottom:'1.5rem',
         fontSize: '1.8rem',
         padding: '1rem 7rem',
         color: '#fff',
@@ -47,4 +67,5 @@ const useStyles = makeStyles({
         },
     },
 });
+
 export default LinkButton;

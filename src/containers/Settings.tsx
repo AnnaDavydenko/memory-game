@@ -1,4 +1,4 @@
-import React, {FC, useState, useCallback, useMemo} from 'react';
+import React, {FC, useState, useCallback} from 'react';
 import {makeStyles} from "@material-ui/core";
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Switch, { SwitchClassKey, SwitchProps } from '@material-ui/core/Switch';
@@ -10,8 +10,20 @@ import classNames from "classnames";
 import LinkButton from "../components/LinkButton";
 import PlaySoundButton from "../components/PlaySoundButton";
 import Modal from "../components/Modal";
-import {Storage} from "../services/storage";
-import {ISettings} from "../common/types";
+import {ISettings, IState} from "../common/types";
+import {Dispatch} from "redux";
+import {connect} from "react-redux";
+import {updateSettingsThunk} from "../thunks/settings";
+
+interface IRedux {
+    storageSettings: ISettings;
+}
+
+interface IDispatch {
+    onUpdateSettings: (settings: ISettings) => void;
+}
+
+type IProps = IRedux & IDispatch;
 
 interface Styles extends Partial<Record<SwitchClassKey, string>> {
     focusVisible?: string;
@@ -20,19 +32,16 @@ interface Props extends SwitchProps {
     classes: Styles;
 }
 
-const Settings: FC = () => {
+const SettingsContainer: FC<IProps> = (props: IProps) => {
     const classes = useStyles();
 
-    const storage = useMemo(() => {
-	    return new Storage();
-    }, []);
-
+    const {storageSettings, onUpdateSettings} = props;
 
     const [valueSound, setValueSound] = useState<number>(30);
     // const [valueMusic, setValueMusic] = useState<number>(30);
     // const [fullScreenEnabled, setFullScreenEnabled] = useState<boolean>(false);
 
-    const [settings, setSettings] = useState<ISettings>(storage.getSettings());
+    const [settings, setSettings] = useState<ISettings>(storageSettings);
 
     const handleChangeFullScreen = useCallback((event: React.ChangeEvent<HTMLInputElement>, fullScreenValue: boolean) => {
         if (fullScreenValue) {
@@ -42,8 +51,8 @@ const Settings: FC = () => {
         }
         settings.fullScreen = fullScreenValue;
         setSettings({...settings});
-        storage.updateSettings(settings);
-    }, [settings, storage]);
+        onUpdateSettings(settings);
+    }, [settings, onUpdateSettings]);
 
 
     const handleChangeVolumeSound = (event: any, newValue: number | number[]) => {
@@ -55,13 +64,13 @@ const Settings: FC = () => {
         audio.volume = (newValue as number) / 100;
         settings.volumeMusic = newValue as number;
         setSettings({ ...settings });
-        storage.updateSettings(settings);
-    },[settings, storage]);
+        onUpdateSettings(settings);
+    },[settings, onUpdateSettings]);
 
     return (
         <main>
             <Modal title='Settings'>
-                <Grid container direction="column">
+                <Grid container direction="column" className={classes.settingsContainer}>
                     <Grid item className={classes.settingItem}>
                         <span className={classes.span}>Full Screen</span>
                         <IOSSwitch
@@ -110,6 +119,9 @@ const Settings: FC = () => {
 };
 
 const useStyles = makeStyles({
+    settingsContainer: {
+      marginBottom: '0.5rem',
+    },
     slider: {
         width: 200,
     },
@@ -182,5 +194,17 @@ const IOSSwitch = withStyles((theme: Theme) =>
     );
 });
 
-export default Settings;
+const mapStateToProps = (state: IState) => ({
+    storageSettings: state.settings.settings,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    onUpdateSettings: (settings: ISettings) => {
+        // @ts-ignore
+        dispatch(updateSettingsThunk(settings));
+    }
+});
+
+const Settings = connect(mapStateToProps, mapDispatchToProps)(SettingsContainer);
+export default Settings
 
