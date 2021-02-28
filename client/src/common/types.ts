@@ -15,14 +15,22 @@ export interface IState {
     settings: ISettingsState;
 }
 
-
-
-
+export interface IScore {
+    id: number;
+    title: string;
+    value: number;
+}
 
 export interface IAction {
     type: string;
     payload?: any;
 }
+
+
+
+
+
+
 
 export interface IImages {
     small: string;

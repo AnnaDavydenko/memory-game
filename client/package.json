@@ -38,6 +38,7 @@
     "@types/react-router-dom": "^5.1.7"
   },
   "scripts": {
+    "localProd": "set NODE_ENV=production&& react-scripts start",
     "start": "set NODE_ENV=development&& react-scripts start",
     "build": "set NODE_ENV=production&& react-scripts build",
     "test": "react-scripts test",
