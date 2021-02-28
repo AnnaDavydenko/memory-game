@@ -10,11 +10,13 @@ import imageArray from "./utils/preloadImages";
 import fonSound from './assets/sounds/fon.mp3';
 // @ts-ignore
 import buttonSound from './assets/sounds/buttonSound.mp3';
+import {config} from './config';
 
 const App: FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
+        console.log(config);
         preloadImage();
     }, []);
 
