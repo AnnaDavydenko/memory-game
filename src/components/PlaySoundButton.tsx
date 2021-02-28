@@ -1,39 +1,38 @@
-import React, {FC, useCallback, useState} from "react";
+import React, {FC, useCallback} from "react";
 import {makeStyles} from "@material-ui/core";
-// @ts-ignore
-import fonSound from '../assets/sounds/fon.mp3';
 import { IoMdVolumeHigh } from "react-icons/io";
 import { IoMdVolumeOff } from "react-icons/io";
 
-const PlaySoundButton: FC = () => {
 
-    const [play, setPlay] = useState<boolean>(false);
+interface IPlaySoundButton {
+    enabled: boolean;
+    type: string;
+    onClick: (type: string) => void;
+}
+
+const PlaySoundButton: FC<IPlaySoundButton> = (props: IPlaySoundButton) => {
+
+    const {type, onClick, enabled} = props;
     const classes = useStyles();
 
-    const handlePlay = useCallback(() => {
-        const audio = document.querySelector("#megaSound") as HTMLAudioElement;
-        setPlay(true);
-        audio.play();
-    }, []);
-
-    const handlePause = useCallback(() => {
-        const audio = document.querySelector("#megaSound") as HTMLAudioElement;
-        setPlay(false);
-        audio.pause();
-    }, []);
+    const handleClick = useCallback(() => onClick(type), [type, onClick]);
 
     return (
         <>
-            {play && (<button onClick={handlePause} className={classes.button} title={'Disable music'}>
-                <span className={classes.icon}>
-                    <IoMdVolumeHigh />
-                </span>
-            </button>)}
-            {!play && (<button onClick={handlePlay} className={classes.button} title={'Enable music'}>
-                <span className={classes.icon}>
-                    <IoMdVolumeOff />
-                </span>
-            </button>)}
+            {enabled && (
+                <button onClick={handleClick} className={classes.button} title={'Disable music'}>
+                    <span className={classes.icon}>
+                        <IoMdVolumeHigh />
+                    </span>
+                </button>
+            )}
+            {!enabled && (
+                <button onClick={handleClick} className={classes.button} title={'Enable music'}>
+                    <span className={classes.icon}>
+                        <IoMdVolumeOff />
+                    </span>
+                </button>
+            )}
         </>
     )
 };
@@ -53,4 +52,5 @@ const useStyles = makeStyles({
     },
 
 });
+
 export default PlaySoundButton;

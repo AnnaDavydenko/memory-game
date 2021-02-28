@@ -10,25 +10,16 @@ const Menu:FC = () => {
     }, []);
 
     return (
-
         <main>
             <Modal title='Welcome' >
                     <Grid container
                           direction="column"
                           justify="center"
                           alignItems="center">
-                        <LinkButton
-                            to={"/chooseCards"} text={"New Game"}>
-                        </LinkButton>
-                        <LinkButton
-                            to={"/score"} text={"High Score"}>
-                        </LinkButton>
-                        <LinkButton
-                            to={"/gameRules"} text={"Rules"}>
-                        </LinkButton>
-                        <LinkButton
-                            to={"/settings"} text={"Settings"}>
-                        </LinkButton>
+                        <LinkButton to={"/chooseCards"} text={"New Game"} />
+                        <LinkButton to={"/score"} text={"High Score"} />
+                        <LinkButton to={"/gameRules"} text={"Rules"} />
+                        <LinkButton to={"/settings"} text={"Settings"} />
                     </Grid>
             </Modal>
         </main>

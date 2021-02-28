@@ -19,9 +19,7 @@ const Rules:FC = () => {
                         </span>
                     </li>
                 </ul>
-                <LinkButton
-                    to={"/"} text={"Back"}>
-                </LinkButton>
+                <LinkButton to={"/"} text={"Back"} />
             </Modal>
         </main>
     );

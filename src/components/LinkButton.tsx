@@ -6,30 +6,34 @@ import buttonSound from "../assets/sounds/buttonSound.mp3";
 import {ISettings, IState} from "../common/types";
 import {connect} from "react-redux";
 
-
+interface IRedux {
+    storageSettings: ISettings;
+}
 
 interface ILinkProps {
     text: string;
     to: string;
 }
+type IProps = ILinkProps & IRedux;
 
-
-const LinkButton: FC<ILinkProps> = (props: ILinkProps) => {
-    const {text, to} = props;
+const LinkButtonContainer: FC<IProps> = (props: IProps) => {
+    const {text, to, storageSettings} = props;
     const classes = useStyles();
     let history = useHistory();
     const audioRef = useRef<any>();
 
     const handleClick = useCallback(() => {
-        audioRef?.current?.play();
+        if(storageSettings.enableSounds){
+            audioRef?.current?.play();
+        }
         setTimeout(() => {
             history.push(to);
         }, 250);
-    }, [audioRef, history, to]);
+    }, [audioRef, history, to, storageSettings]);
 
     return (
         <>
-            <button className={classes.button} onClick={handleClick}>
+            <button className={classes.button} onClick={handleClick} ref={audioRef}>
                 {text}
             </button>
             <audio ref={audioRef} src={buttonSound} />
@@ -67,5 +71,11 @@ const useStyles = makeStyles({
         },
     },
 });
+
+const mapStateToProps = (state: IState) => ({
+    storageSettings: state.settings.settings,
+});
+
+const LinkButton = connect(mapStateToProps)(LinkButtonContainer);
 
 export default LinkButton;

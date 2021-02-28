@@ -32,14 +32,15 @@ interface Props extends SwitchProps {
     classes: Styles;
 }
 
+const SOUND_TYPES = {
+    MUSIC: 'music',
+    SOUND: 'sound',
+};
+
 const SettingsContainer: FC<IProps> = (props: IProps) => {
     const classes = useStyles();
 
     const {storageSettings, onUpdateSettings} = props;
-
-    const [valueSound, setValueSound] = useState<number>(30);
-    // const [valueMusic, setValueMusic] = useState<number>(30);
-    // const [fullScreenEnabled, setFullScreenEnabled] = useState<boolean>(false);
 
     const [settings, setSettings] = useState<ISettings>(storageSettings);
 
@@ -54,18 +55,45 @@ const SettingsContainer: FC<IProps> = (props: IProps) => {
         onUpdateSettings(settings);
     }, [settings, onUpdateSettings]);
 
-
-    const handleChangeVolumeSound = (event: any, newValue: number | number[]) => {
-        setValueSound(newValue as number);
-    };
+    const handleChangeVolumeSound = useCallback((event: any, newValue: number | number[]) => {
+        const audio = document.querySelector("#buttonSound") as HTMLAudioElement;
+        audio.volume = (newValue as number) / 100;
+        settings.volumeSounds = newValue as number;
+        setSettings({ ...settings });
+        onUpdateSettings(settings);
+    }, [settings, onUpdateSettings]);
 
     const handleChangeVolumeMusic = useCallback((event: any, newValue: number | number[]) => {
-        const audio = document.querySelector("#megaSound") as HTMLAudioElement;
+        const audio = document.querySelector("#music") as HTMLAudioElement;
         audio.volume = (newValue as number) / 100;
         settings.volumeMusic = newValue as number;
         setSettings({ ...settings });
         onUpdateSettings(settings);
     },[settings, onUpdateSettings]);
+
+    const handleChangeSound = useCallback((type: string) => {
+        const audio = document.querySelector("#music") as HTMLAudioElement;
+        const sound = document.querySelector("#buttonSound") as HTMLAudioElement;
+        if (type === SOUND_TYPES.MUSIC) {
+            if (!settings.enableMusic) {
+                audio.play();
+            } else {
+                audio.pause();
+            }
+            settings.enableMusic = !settings.enableMusic;
+        }
+        if (type === SOUND_TYPES.SOUND) {
+            if (!settings.enableSounds) {
+                sound.play();
+            } else {
+                sound.pause();
+            }
+            settings.enableSounds = !settings.enableSounds;
+        }
+
+        setSettings({ ...settings });
+        onUpdateSettings(settings);
+    }, [settings, onUpdateSettings]);
 
     return (
         <main>
@@ -81,9 +109,16 @@ const SettingsContainer: FC<IProps> = (props: IProps) => {
                         />
                     </Grid>
 
-                    <Grid item className={classes.settingItem}>
-                        <span className={classes.span}>Enable Music</span>
-                        <PlaySoundButton/>
+                    <Grid container justify='space-between'>
+                        <Grid item className={classes.settingItem} >
+                            <span className={classes.span}>Enable Music</span>
+                            <PlaySoundButton type={SOUND_TYPES.MUSIC} enabled={settings.enableMusic} onClick={handleChangeSound}/>
+                        </Grid>
+
+                        <Grid item className={classes.settingItem}>
+                            <span className={classes.span}>Enable Sounds</span>
+                            <PlaySoundButton type={SOUND_TYPES.SOUND} enabled={settings.enableSounds} onClick={handleChangeSound}/>
+                        </Grid>
                     </Grid>
 
                     <Grid container className={classNames(classes.slider, classes.settingItem)}>
@@ -92,7 +127,7 @@ const SettingsContainer: FC<IProps> = (props: IProps) => {
                            <VolumeDown />
                         </Grid>
                         <Grid item xs>
-                            <Slider value={valueSound} onChange={handleChangeVolumeSound} />
+                            <Slider value={settings.volumeSounds} onChange={handleChangeVolumeSound} />
                         </Grid>
                         <Grid item>
                             <VolumeUp />
@@ -105,9 +140,9 @@ const SettingsContainer: FC<IProps> = (props: IProps) => {
                             <VolumeDown />
                         </Grid>
                         <Grid item xs>
-                            <Slider value={settings.volumeMusic} onChange={handleChangeVolumeMusic} aria-labelledby="continuous-slider" />
+                            <Slider value={settings.volumeMusic} onChange={handleChangeVolumeMusic} />
                         </Grid>
-                        <Grid item>
+                        <Grid item className={classes.icon}>
                             <VolumeUp />
                         </Grid>
                     </Grid>
@@ -136,6 +171,12 @@ const useStyles = makeStyles({
         alignItems: 'center',
         padding: '1rem 0',
     },
+    icon: {
+        '& svg': {
+            color: 'red',
+            fontSize: '40px',
+        }
+    }
 
 });
 

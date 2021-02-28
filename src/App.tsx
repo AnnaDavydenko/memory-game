@@ -8,6 +8,8 @@ import { Menu, Rules, Settings, Score, GamePage, ChooseCardsThemes } from "./con
 import imageArray from "./utils/preloadImages";
 // @ts-ignore
 import fonSound from './assets/sounds/fon.mp3';
+// @ts-ignore
+import buttonSound from './assets/sounds/buttonSound.mp3';
 
 const App: FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
@@ -49,7 +51,8 @@ const App: FC = () => {
                         </Switch>
 
                         <Footer/>
-                        <audio id="megaSound" src={fonSound} />
+                        <audio id="music" src={fonSound} />
+                        <audio id="buttonSound" src={buttonSound} />
                     </div>
                 </Router>
             )}
