@@ -13,9 +13,25 @@ const Score = () => {
             });
     }, []);
 
+    const handleClick = () => {
+        fetch(`${config.api}/api/scores/add`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({title: "test", value: 66}),
+        })
+            .then(res => {
+                return res.json();
+            })
+            .then(res => {
+                console.log((res as any)?.data);
+            });
+    }
+
     return (
         <main>
-
+            <button onClick={handleClick}>{"click me"}</button>
         </main>
     );
 };
