@@ -1,0 +1,32 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "root",
+    "database": "memory_game",
+    "host": "localhost",
+    "dialect": "postgres",
+    "operatorsAliases": false,
+    "define": {
+      "timestamps": false
+    }
+  },
+  "production": {
+    "uri": "postgres://sqwnehbearadas:2ad39ac7eaf1d9c2a56ee1f76e786372122de199a909c9608533967761744bfd@ec2-3-223-72-172.compute-1.amazonaws.com:5432/ddk3kgcclvaugf",
+    "username": "sqwnehbearadas",
+    "password": "2ad39ac7eaf1d9c2a56ee1f76e786372122de199a909c9608533967761744bfd",
+    "database": "ddk3kgcclvaugf",
+    "host": "ec2-3-223-72-172.compute-1.amazonaws.com",
+    "dialect": "postgres",
+    "operatorsAliases": false,
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    },
+    "define": {
+      "timestamps": false
+    },
+    "use_env_variable": "DATABASE_URL"
+  }
+}
