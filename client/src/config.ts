@@ -5,8 +5,8 @@ const ENV_VARIABLES = {
         api: "http://localhost:3001",
     },
     production: {
-        api: "https://memory-game-rock.herokuapp.com",
+        api: "https://memory-game-cards.herokuapp.com/",
     }
-}
+};
 
 export const config = { ...ENV_VARIABLES[env] };
