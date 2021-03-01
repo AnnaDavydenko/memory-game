@@ -2,63 +2,48 @@ import React, {useState, useEffect, useContext, useMemo, useCallback} from "reac
 import { Board, FinalModal } from "../components";
 import {CARD_THEMES} from "./ChooseCardsThemes";
 import {Storage} from "../services/storage";
-import {ISettings} from "../common/types";
+import {ISettings, IState} from "../common/types";
 import {shuffle} from "../utils/gameUtils";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import {Link} from "react-router-dom";
-import classNames from "classnames";
+import {connect} from "react-redux";
 
-const GamePage = () => {
+interface IProps {
+    settings: ISettings;
+}
+
+const GamePageContainer = (props: IProps) => {
     const classes = useStyles();
+
+    const {settings} = props;
+
     const [flipped, setFlipped] = useState<number[]>([]);
-    const [cards, setCards] = useState<any[]>([]);
     const [solved, setSolved] = useState<any[]>([]);
     const [disabled, setDisabled] = useState(false);
     const [flips, setFlips] = useState(0);
     const [isRunning, setIsRunning] = useState(true);
     const [modalShow, setModalShow] = useState(false);
-    const [victory, setVictory] = useState(false);
 
-    const settings = useMemo<ISettings>(() => {
-        return new Storage().getSettings();
-    }, []);
-
-    useEffect(() => {
-        setCards(initDeck(settings));
-    }, [settings]);
+    const cards = useMemo(() => initDeck(settings), [settings]);
 
     useEffect(() => {
         if (solved.length === 16) {
             setIsRunning(false);
-            setVictory(true);
             setModalShow(true);
         }
     }, [solved]);
 
-    useEffect(() => {
-        // if (seconds === 0) {
-        //     setIsRunning(false);
-            if (solved.length !== 16) {
-                setVictory(false);
-            }
-            setModalShow(true);
-        // }
-    }, [solved.length]);
+    const sameCardClicked = useCallback((id: number) => {
+        return flipped.includes(id);
+    },[flipped]);
 
-    // useEffect(() => {
-    //     if (isRunning) {
-    //         const id = window.setInterval(
-    //             () => setSeconds((seconds) => seconds - 1),
-    //             1000
-    //         );
-    //         setIntervalId(id);
-    //     } else {
-    //         // Clear set Interval
-    //         window.clearInterval(intervalId);
-    //     }
-    // }, [isRunning, intervalId]);
+    const isMatch = useCallback((id: number) => {
+        const clickedCard = cards.find((card) => card.id === id);
+        const flippedCard = cards.find((card) => flipped[0] === card.id);
+        return flippedCard.type === clickedCard.type;
+    }, [cards, flipped]);
 
-    const onClick = (id: number) => {
+    const onClick = useCallback((id: number) => {
         setDisabled(true);
 
         // If no cards flipped
@@ -97,27 +82,7 @@ const GamePage = () => {
                 }, 2000);
             }
         }
-    };
-
-    const sameCardClicked = (id: number) => {
-        return flipped.includes(id);
-    };
-
-    const isMatch = (id: number) => {
-        const clickedCard = cards.find((card) => card.id === id);
-        const flippedCard = cards.find((card) => flipped[0] === card.id);
-        return flippedCard.type === clickedCard.type;
-    };
-
-    const playAgain = () => {
-        setFlipped([]);
-        setCards(initDeck(settings));
-        setSolved([]);
-        setDisabled(false);
-        setFlips(0);
-        setIsRunning(true);
-        setModalShow(false);
-    };
+    }, [ flipped, solved, isMatch, sameCardClicked]);
 
     return (
         <>
@@ -128,7 +93,7 @@ const GamePage = () => {
                 </div>
                 <div className={classes.cardsContainer}>
                     <Board
-                        cards={cards}
+                        cards={[...cards]}
                         flipped={flipped}
                         onClick={onClick}
                         disabled={disabled}
@@ -136,12 +101,13 @@ const GamePage = () => {
                     />
                 </div>
                 <div>
-                    {modalShow && <FinalModal flips={flips} victory={victory} />}
+                    {modalShow && <FinalModal flips={flips} />}
                 </div>
             </main>
         </>
     );
 };
+
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
     gameContainer:{
@@ -208,5 +174,11 @@ const initDeck = (settings: ISettings) => {
 
     return shuffle(cards);
 };
+
+const mapStateToProps = (state: IState) => ({
+    settings: state.settings.settings
+});
+
+const GamePage = connect(mapStateToProps)(GamePageContainer);
 
  export default GamePage;

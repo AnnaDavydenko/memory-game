@@ -23,22 +23,22 @@ export const scores = (state: IScoresState = initialState, action: IAction) => {
         case FETCH_SCORES.FINISHED:
             return {
                 ...state,
-                list: [...action.payload],
+                list: action.payload,
                 isFetching: false
             };
-
-        case ADD_SCORE.START:
-            return {
-                ...state,
-                isFetching: true
-            };
-
-        case ADD_SCORE.FINISHED:
-            return {
-                ...state,
-                list: [...state.list, action.payload],
-                isFetching: false
-            };
+        //
+        // case ADD_SCORE.START:
+        //     return {
+        //         ...state,
+        //         isFetching: true
+        //     };
+        //
+        // case ADD_SCORE.FINISHED:
+        //     return {
+        //         ...state,
+        //         list: [...state.list, action.payload],
+        //         isFetching: false
+        //     };
 
         default:
             return state;

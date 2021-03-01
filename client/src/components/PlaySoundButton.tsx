@@ -20,14 +20,14 @@ const PlaySoundButton: FC<IPlaySoundButton> = (props: IPlaySoundButton) => {
     return (
         <>
             {enabled && (
-                <button onClick={handleClick} className={classes.button} title={'Disable music'}>
+                <button onClick={handleClick} className={classes.button} title={`Disable ${type}`}>
                     <span className={classes.icon}>
                         <IoMdVolumeHigh />
                     </span>
                 </button>
             )}
             {!enabled && (
-                <button onClick={handleClick} className={classes.button} title={'Enable music'}>
+                <button onClick={handleClick} className={classes.button} title={`Enable ${type}`}>
                     <span className={classes.icon}>
                         <IoMdVolumeOff />
                     </span>

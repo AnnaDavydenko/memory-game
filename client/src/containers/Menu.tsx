@@ -4,10 +4,6 @@ import LinkButton from "../components/LinkButton";
 import Modal from "../components/Modal";
 
 const Menu:FC = () => {
-//todo
-    const handleSound = useCallback(() => {
-
-    }, []);
 
     return (
         <main>

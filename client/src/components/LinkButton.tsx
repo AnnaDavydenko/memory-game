@@ -20,29 +20,27 @@ const LinkButtonContainer: FC<IProps> = (props: IProps) => {
     const {text, to, storageSettings} = props;
     const classes = useStyles();
     let history = useHistory();
-    const audioRef = useRef<any>();
 
     const handleClick = useCallback(() => {
+        const audio = document.querySelector("#buttonSound") as HTMLAudioElement;
         if(storageSettings.enableSounds){
-            audioRef?.current?.play();
+            audio.play();
         }
         setTimeout(() => {
             history.push(to);
         }, 250);
-    }, [audioRef, history, to, storageSettings]);
+    }, [history, to, storageSettings]);
 
     return (
         <>
-            <button className={classes.button} onClick={handleClick} ref={audioRef}>
+            <button className={classes.button} onClick={handleClick} >
                 {text}
             </button>
-            <audio ref={audioRef} src={buttonSound} />
         </>
     );
 };
 const useStyles = makeStyles({
     button: {
-
         marginBottom:'1.5rem',
         fontSize: '1.8rem',
         padding: '1rem 7rem',

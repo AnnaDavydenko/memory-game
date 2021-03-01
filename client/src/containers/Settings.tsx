@@ -109,7 +109,7 @@ const SettingsContainer: FC<IProps> = (props: IProps) => {
                         />
                     </Grid>
 
-                    <Grid container justify='space-between'>
+                    <Grid container justify='space-between' className={classes.gridContainer} >
                         <Grid item className={classes.settingItem} >
                             <span className={classes.span}>Enable Music</span>
                             <PlaySoundButton type={SOUND_TYPES.MUSIC} enabled={settings.enableMusic} onClick={handleChangeSound}/>
@@ -120,32 +120,33 @@ const SettingsContainer: FC<IProps> = (props: IProps) => {
                             <PlaySoundButton type={SOUND_TYPES.SOUND} enabled={settings.enableSounds} onClick={handleChangeSound}/>
                         </Grid>
                     </Grid>
-
-                    <Grid container className={classNames(classes.slider, classes.settingItem)}>
+                <Grid container justify='space-between'>
+                    <Grid container className={classNames(classes.sliderContainer, classes.settingItem)}>
                         <span className={classes.span}>Sounds</span>
-                        <Grid item>
+                        <Grid item className={classes.icon}>
                            <VolumeDown />
                         </Grid>
                         <Grid item xs>
-                            <Slider value={settings.volumeSounds} onChange={handleChangeVolumeSound} />
-                        </Grid>
-                        <Grid item>
-                            <VolumeUp />
-                        </Grid>
-                    </Grid>
-
-                    <Grid container className={classNames(classes.slider, classes.settingItem)}>
-                        <span className={classes.span}>Music</span>
-                        <Grid item>
-                            <VolumeDown />
-                        </Grid>
-                        <Grid item xs>
-                            <Slider value={settings.volumeMusic} onChange={handleChangeVolumeMusic} />
+                            <Slider className={classes.slider} valueLabelDisplay="on" value={settings.volumeSounds} onChange={handleChangeVolumeSound} />
                         </Grid>
                         <Grid item className={classes.icon}>
                             <VolumeUp />
                         </Grid>
                     </Grid>
+
+                    <Grid container className={classNames(classes.sliderContainer, classes.settingItem)}>
+                        <span className={classes.span}>Music</span>
+                        <Grid item className={classes.icon}>
+                            <VolumeDown />
+                        </Grid>
+                        <Grid item xs>
+                            <Slider className={classes.slider} valueLabelDisplay="on" value={settings.volumeMusic} onChange={handleChangeVolumeMusic} />
+                        </Grid>
+                        <Grid item className={classes.icon}>
+                            <VolumeUp />
+                        </Grid>
+                    </Grid>
+                </Grid>
                 </Grid>
                 <LinkButton to={"/"} text={"Back"} />
             </Modal>
@@ -157,13 +158,16 @@ const useStyles = makeStyles({
     settingsContainer: {
       marginBottom: '0.5rem',
     },
-    slider: {
+    sliderContainer: {
         width: 200,
     },
     span: {
         fontFamily: 'Reggae One',
         color: '#3288dc',
         paddingRight: '1.5rem',
+    },
+    gridContainer: {
+        marginBottom: '1rem',
     },
     settingItem: {
         display: 'flex',
@@ -173,9 +177,12 @@ const useStyles = makeStyles({
     },
     icon: {
         '& svg': {
-            color: 'red',
-            fontSize: '40px',
+            color: '#01c5f1 ',
+            fontSize: '2rem',
         }
+    },
+    slider: {
+        color: '#3288dc',
     }
 
 });
@@ -247,5 +254,5 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 });
 
 const Settings = connect(mapStateToProps, mapDispatchToProps)(SettingsContainer);
-export default Settings
+export default Settings;
 

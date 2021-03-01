@@ -20,7 +20,7 @@ const Modal: FC<IModalProps> = (props: IModalProps) => {
 };
 const useStyles = makeStyles({
     modalContainer: {
-        marginTop: '4rem',
+        marginTop: '2rem',
         height: '100%',
         display: 'flex',
         justifyContent: 'center',

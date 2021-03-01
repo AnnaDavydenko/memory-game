@@ -1,6 +1,5 @@
 import {ISettingsState} from "../reducers/settings";
-import {Simulate} from "react-dom/test-utils";
-import keyDown = Simulate.keyDown;
+import {IScoresState} from "../reducers/scores";
 
 export interface ISettings {
     fullScreen: boolean;
@@ -13,6 +12,7 @@ export interface ISettings {
 
 export interface IState {
     settings: ISettingsState;
+    scores: IScoresState;
 }
 
 export interface IScore {
