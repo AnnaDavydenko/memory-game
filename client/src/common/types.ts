@@ -16,7 +16,7 @@ export interface IState {
 }
 
 export interface IScore {
-    id: number;
+    id?: number;
     title: string;
     value: number;
 }
@@ -24,6 +24,11 @@ export interface IScore {
 export interface IAction {
     type: string;
     payload?: any;
+}
+
+export interface ICard {
+    type: string;
+    id: number;
 }
 
 

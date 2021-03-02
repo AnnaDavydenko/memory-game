@@ -1,4 +1,4 @@
-import React, {FC} from "react";
+import React, {FC, useMemo} from "react";
 import classNames from "classnames";
 import { winter9 } from "../assets/images/winter";
 import { architecture9 } from "../assets/images/architecture";
@@ -16,15 +16,17 @@ const GroupCard:FC<IGroupCardProps> = (props: IGroupCardProps) => {
     const { type, onClick, classes } = props;
     const innerClasses = useStyles();
 
-    let image = "";
-
-    if (type === CARD_THEMES.ARCHITECTURE) {
-        image = architecture9;
-    } else if (type === CARD_THEMES.CATS) {
-        image = cat9;
-    } else {
-        image = winter9;
-    }
+    const image = useMemo( () => {
+        let image = "";
+        if (type === CARD_THEMES.ARCHITECTURE) {
+            image = architecture9;
+        } else if (type === CARD_THEMES.CATS) {
+            image = cat9;
+        } else {
+            image = winter9;
+        }
+        return image;
+    },[type]);
 
     return (
         <div onClick={onClick} className={innerClasses.themeBox}>
@@ -42,6 +44,8 @@ const useStyles = makeStyles({
         cursor: 'pointer',
         transition: 'all 0.2s',
         textAlign: 'center',
+        marginBottom: '1.5rem',
+        marginTop: '0.5rem',
         '&:active': {
             transform: 'scale(1.15)',
         },

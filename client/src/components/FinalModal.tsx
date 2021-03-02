@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useState} from "react";
+import React, {FC, useCallback, useEffect, useState} from "react";
 import { GiBackstab, GiCardJoker, GiTrophy } from "react-icons/gi";
 import {makeStyles, Theme, ThemeProvider} from "@material-ui/core";
 import TextField from '@material-ui/core/TextField';
@@ -6,30 +6,47 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import Zoom from '@material-ui/core/Zoom';
 import {useHistory} from "react-router";
+import {IScore, ISettings, IState} from "../common/types";
+import {Dispatch} from "redux";
+import {updateSettingsThunk} from "../thunks/settings";
+import {connect} from "react-redux";
+import {addScoreThunk} from "../thunks/scores";
 
-
-interface IFinalModal {
-    flips: number;
+interface IRedux {
+    isUpdating: boolean;
 }
 
-const FinalModal:FC<IFinalModal> = (props:IFinalModal) => {
-    const {flips} = props;
+interface IDispatch {
+    addScore: (score: IScore) => void;
+}
+interface IFinalModal {
+    flips: number;
+    open: boolean;
+}
+type IProps = IFinalModal & IRedux & IDispatch;
+
+const FinalModalContainer:FC<IProps> = (props:IProps) => {
+    const {open, flips, isUpdating, addScore} = props;
     const classes = useStyles();
-    const [open, setOpen] = useState<boolean>(true);
     const [name, setName] = useState<string>("");
+    const [saving, setSaving] = useState<boolean>(false);
     let history = useHistory();
 
-    const handleSubmit = useCallback(() => {
-        console.log(flips);
-        console.log(name);
+    useEffect(() => {
+        if (saving && !isUpdating) {
+            setSaving(false);
+            history.push("/score");
+        }
+    }, [saving, isUpdating, history]);
 
-        history.push("/score");
-    }, [history, name, flips]);
+    const handleSubmit = useCallback(() => {
+        setSaving(true);
+        addScore({title: name, value: flips});
+    }, [name, flips, addScore]);
 
     const handleChangeInput = useCallback((e: any) => {
         setName(e.target.value);
     }, []);
-
 
     return (
         <Zoom in={open}>
@@ -185,4 +202,16 @@ const useStyles = makeStyles({
     },
 });
 
+const mapStateToProps = (state: IState) => ({
+    isUpdating: state.scores.isUpdating
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    addScore: (score: IScore) => {
+        // @ts-ignore
+        dispatch(addScoreThunk(score));
+    }
+});
+
+const FinalModal = connect(mapStateToProps, mapDispatchToProps)(FinalModalContainer);
 export default FinalModal;

@@ -1,10 +1,12 @@
 import React, {useEffect} from "react";
-import {config} from "../config";
 import {getAllScoresThunk} from "../thunks/scores";
-import {IScore, ISettings, IState} from "../common/types";
+import {IScore, IState} from "../common/types";
 import {Dispatch} from "redux";
 import {connect} from "react-redux";
 import { makeStyles } from '@material-ui/core/styles';
+import LinkButton from "../components/LinkButton";
+import Modal from "../components/Modal";
+import {Loader} from "../components";
 
 interface IRedux {
     isScoresFetching: boolean,
@@ -18,77 +20,71 @@ interface IDispatch {
 type IProps = IRedux & IDispatch;
 
 const ScoreContainer = (props: IProps) => {
-    const {isScoresFetching, scores, getAllScores} = props;
+    const {isScoresFetching, scores = [], getAllScores} = props;
     const classes = useStyles();
     useEffect(() => {
         getAllScores();
     }, [getAllScores]);
 
-
-    const handleClick = () => {
-
-    }
-
-
     return (
-        <main>
-            <div className={classes.absolute}>
-                <table className={classes.scroll}>
-                    <thead className={classes.tableHeader}>
-                    <tr>
-                        <th>Ranking</th>
-                        <th>Name</th>
-                        <th>Flips</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {scores.map((score: IScore, index: number) => {
-                        return (
-                            <tr key={score.id} >
-                                <td>{index+1}</td>
-                                <td>{score.title}</td>
-                                <td>{score.value}</td>
-                            </tr>
-                        );
-                    })}
-                    </tbody>
-                </table>
-            </div>
+        <>
+            {(isScoresFetching) ? (<Loader/>) : (
+                <main>
+                    <Modal title='High Score'>
+                        <div className={classes.absolute}>
+                            <table className={classes.scroll}>
+                                <thead className={classes.tableHeader}>
+                                <tr>
+                                    <th>Ranking</th>
+                                    <th>Name</th>
+                                    <th>Flips</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {scores.map((score: IScore, index: number) => {
+                                    return (
+                                        <tr key={score.id}>
+                                            <td>{index + 1}</td>
+                                            <td>{score.title}</td>
+                                            <td>{score.value}</td>
+                                        </tr>
+                                    );
+                                })}
+                                </tbody>
+                            </table>
+                        </div>
+                        <LinkButton to={"/"} text={"Menu"}/>
+                    </Modal>
 
-            <button onClick={handleClick}>{"click me"}</button>
-        </main>
+                </main>
+            )}
+        </>
     );
 };
 const useStyles = makeStyles({
     absolute: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        height: '100%',
-        textAlign: 'center',
     },
     tableHeader: {
         fontSize: '18px',
     },
     scroll: {
-        height: 'calc(100% - 120px)',
+        height: '19rem',
         overflow: 'hidden',
-        background: '#00000069',
+        backgroundImage: 'linear-gradient(120deg, #3a7bd5, #00d2ff)',
         width: '80%',
         display: 'flex',
         flexDirection: 'column',
-        margin: '25px auto',
-        justifyContent: 'center',
+        margin: '0 auto 1.5rem',
         textAlign: 'center',
-        borderRadius: '7px',
-        border: '2px solid #150304',
+        borderRadius: '5px',
         padding: '10px',
-        fontFamily: 'Cinzel',
+        fontFamily: 'Reggae One',
+        color: '#ffffff',
         '& tbody': {
             display: 'block',
             height: '100%',
             overflowY: 'scroll',
-            paddingBottom: '8px',
+            padding: '0.3rem 0',
         },
         '& tbody::-webkit-scrollbar': {
             width: '3px',
@@ -99,7 +95,7 @@ const useStyles = makeStyles({
             tableLayout: 'fixed',
         },
         '& tbody tr': {
-            height: '45px',
+            height: '3.2rem',
         },
         '& thead': {
             width: 'calc(100% - 2px)',
@@ -110,8 +106,8 @@ const useStyles = makeStyles({
         },
         '& tbody::-webkit-scrollbar-thumb': {
             borderRadius: '10px',
-            background: '#ffa96cc9',
-            boxShadow: 'inset 0 0 6px rgba(0,0,0,0.5)',
+            background: '#ffffff',
+            boxShadow: 'inset 0 0 6px #ffffff',
         },
     },
 });

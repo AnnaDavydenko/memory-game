@@ -27,11 +27,10 @@ const Footer: FC = () => {
 
 const useStyles = makeStyles({
     footer: {
-        position: 'absolute',
+        position: 'fixed',
         bottom: 0,
         color: '#3288dc',
         width: '100%',
-        marginTop: '3.5rem',
         display: 'flex',
         justifyContent: 'space-evenly',
         alignItems: 'center',

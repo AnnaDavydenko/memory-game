@@ -2,11 +2,11 @@ import {IScore} from "../common/types";
 import {Dispatch} from "redux";
 import {addScore, fetchScores} from "../actions";
 import {config} from "../config";
-import {FETCH_SCORES} from "../actions/actionTypes";
+import {ADD_SCORE, GET_SCORES} from "../actions/actionTypes";
 
 export const addScoreThunk = (score: IScore) => (dispatch: Dispatch) => {
     // add start
-    dispatch(addScore(FETCH_SCORES.START));
+    dispatch(addScore(ADD_SCORE.START));
     fetch(`${config.api}/api/scores/add`, {
         method: "POST",
         headers: {
@@ -17,17 +17,17 @@ export const addScoreThunk = (score: IScore) => (dispatch: Dispatch) => {
         .then(res => res.json())
         .then(res => {
             // add success
-            dispatch(addScore(FETCH_SCORES.FINISHED, res.data));
+            dispatch(addScore(ADD_SCORE.FINISHED, res.newTodo));
         })
         .catch(res => {
             //add failing
-            dispatch(addScore(FETCH_SCORES.FAILED));
+            dispatch(addScore(ADD_SCORE.FAILED));
         });
 };
 
 export const getAllScoresThunk = () => (dispatch: Dispatch) => {
     // fetch start
-    dispatch(fetchScores(FETCH_SCORES.START));
+    dispatch(fetchScores(GET_SCORES.START));
     fetch(`${config.api}/api/scores`, {
         method: "GET",
         headers: {
@@ -37,11 +37,11 @@ export const getAllScoresThunk = () => (dispatch: Dispatch) => {
         .then(res => res.json())
         .then(res => {
             // fetch success
-            dispatch(fetchScores(FETCH_SCORES.FINISHED, res.data));
+            dispatch(fetchScores(GET_SCORES.FINISHED, res.data));
         })
         .catch(err => {
             // fetch error
-            dispatch(fetchScores(FETCH_SCORES.FAILED));
+            dispatch(fetchScores(GET_SCORES.FAILED));
         });
 
 

@@ -16,7 +16,7 @@ const useStyles = makeStyles({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100vh',
+        height: "calc(100vh - 146px)",
         '& img' : {
             width: '5rem',
         }

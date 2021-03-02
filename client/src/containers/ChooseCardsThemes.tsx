@@ -1,12 +1,25 @@
-import React, {FC, useCallback, useMemo, useState} from "react";
+import React, {FC, useCallback, useEffect, useMemo, useState} from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import { GroupCard } from "../components";
+import {GroupCard, Loader} from "../components";
 import LinkButton from "../components/LinkButton";
 import Modal from "../components/Modal";
-import {ISettings} from "../common/types";
-import {Storage} from "../services/storage";
+import {ISettings, IState} from "../common/types";
 import {Grid} from "@material-ui/core";
+import imageArray from "../utils/preloadImages";
+import {config} from "../config";
+import {Dispatch} from "redux";
+import {updateSettingsThunk} from "../thunks/settings";
+import {connect} from "react-redux";
 
+interface IRedux {
+    settings: ISettings;
+}
+
+interface IDispatch {
+    onUpdateSettings: (settings: ISettings) => void;
+}
+
+type IProps = IRedux & IDispatch;
 export const CARD_THEMES = {
     WINTER: "Winter",
     ARCHITECTURE: "Architecture",
@@ -17,14 +30,12 @@ interface ICardItem {
     type: string,
 }
 
-const ChooseCardsThemes:FC = () => {
+const ChooseCardsThemesContainer:FC<IProps> = (props: IProps) => {
+    const {settings, onUpdateSettings} = props;
     const classes = useStyles();
-    const storage = useMemo(() => {
-        return new Storage();
-    }, []);
 
-    const [settings, setSettings] = useState<ISettings>(storage.getSettings());
     const [activeCardId, setActiveCardId] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
 
     const CARDS = useMemo( () => {
         return [{
@@ -42,30 +53,54 @@ const ChooseCardsThemes:FC = () => {
     const handleChangeTheme = useCallback((cardItem: ICardItem) => () => {
         settings.cardsTheme = cardItem.type;
         setActiveCardId(cardItem.id);
-        setSettings({...settings});
-        storage.updateSettings(settings);
-    }, [settings, storage]);
+        onUpdateSettings(settings);
+    }, [settings, onUpdateSettings]);
+
+    const preloadImage = () => {
+        setLoading(true);
+        const images = imageArray();
+        let length = images.length;
+        images.forEach((picture) => {
+            const img = new Image();
+            img.src = picture;
+            img.onload = () => {
+                --length;
+                if (length <= 0) {
+                    setLoading(false);
+                }
+            };
+        });
+    };
+    useEffect(() => {
+        console.log(config);
+        preloadImage();
+    }, []);
 
     return (
-        <main>
-            <Modal title='Choose cards'>
-                <div className={classes.cardsContainer} >
-                 {CARDS.map((cardItem, index) => (
-                     <div key={`id-${index}`} className={(cardItem.id === activeCardId) ? classes.activeCard : undefined}>
-                     <GroupCard
-                         type={cardItem.type}
-                         onClick={handleChangeTheme(cardItem)}
-                         classes={{image: classes.imageRoot}}
-                     />
-                     </div>
-                 ))}
-                </div>
-                <Grid container className='buttonsContainer'>
-                    <LinkButton to={"/game"} text={"Start"} />
-                    <LinkButton to={"/"} text={"Back"} />
-                </Grid>
-            </Modal>
-        </main>
+        <>
+            {(loading) ? (<Loader/>) : (
+                <main>
+                    <Modal title='Choose cards'>
+                        <div className={classes.cardsContainer}>
+                            {CARDS.map((cardItem, index) => (
+                                <div key={`id-${index}`}
+                                     className={(cardItem.id === activeCardId) ? classes.activeCard : undefined}>
+                                    <GroupCard
+                                        type={cardItem.type}
+                                        onClick={handleChangeTheme(cardItem)}
+                                        classes={{image: classes.imageRoot}}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                        <Grid container className='buttonsContainer'>
+                            <LinkButton to={"/game"} text={"Start"}/>
+                            <LinkButton to={"/"} text={"Back"}/>
+                        </Grid>
+                    </Modal>
+                </main>
+            )}
+        </>
     );
 };
 
@@ -94,4 +129,17 @@ const useStyles = makeStyles({
     },
 
 });
+
+const mapStateToProps = (state: IState) => ({
+    settings: state.settings.settings,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    onUpdateSettings: (settings: ISettings) => {
+        // @ts-ignore
+        dispatch(updateSettingsThunk(settings));
+    }
+});
+
+const ChooseCardsThemes = connect(mapStateToProps, mapDispatchToProps)(ChooseCardsThemesContainer);
 export default ChooseCardsThemes;

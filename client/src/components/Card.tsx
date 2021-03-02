@@ -3,7 +3,12 @@ import cardImage from "../assets/images/card.png";
 import getImage from "../utils/getImage";
 import {makeStyles} from "@material-ui/core";
 import classNames from "classnames";
+import {ISettings, IState} from "../common/types";
+import {connect} from "react-redux";
 
+interface IRedux {
+    storageSettings: ISettings;
+}
 interface ICardProps {
     id: number;
     type: string;
@@ -14,19 +19,25 @@ interface ICardProps {
     onClick: (id: number) => void;
     disabled: boolean;
 }
-const Card: FC<ICardProps> = (props: ICardProps) => {
+type IProps = ICardProps & IRedux;
 
-    const {id, type, flipped, solved, height, width, onClick, disabled} = props;
+const CardContainer: FC<IProps> = (props: IProps) => {
+
+    const {id, type, flipped, solved, height, width, onClick, disabled, storageSettings} = props;
 
     const classes = useStyles();
 
     let frontImage = getImage(type);
 
     const handleClick = useCallback(() => {
+        const audio = document.querySelector("#zvuk") as HTMLAudioElement;
         if (!disabled) {
-            onClick(id)
+            onClick(id);
+            if(storageSettings.enableSounds){
+                audio.play();
+            }
         }
-    }, [id, disabled, onClick]);
+    }, [id, disabled, onClick, storageSettings.enableSounds]);
 
     return (
         <div
@@ -82,5 +93,11 @@ const useStyles = makeStyles({
     },
 
 });
+
+const mapStateToProps = (state: IState) => ({
+    storageSettings: state.settings.settings,
+});
+
+const Card = connect(mapStateToProps)(CardContainer);
 
 export default Card;

@@ -1,11 +1,9 @@
-import React, {useState, useEffect, useContext, useMemo, useCallback} from "react";
-import { Board, FinalModal } from "../components";
+import React, {useState, useEffect, useCallback} from "react";
+import {Board, FinalModal} from "../components";
 import {CARD_THEMES} from "./ChooseCardsThemes";
-import {Storage} from "../services/storage";
-import {ISettings, IState} from "../common/types";
+import {ICard, ISettings, IState} from "../common/types";
 import {shuffle} from "../utils/gameUtils";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
-import {Link} from "react-router-dom";
 import {connect} from "react-redux";
 
 interface IProps {
@@ -21,14 +19,15 @@ const GamePageContainer = (props: IProps) => {
     const [solved, setSolved] = useState<any[]>([]);
     const [disabled, setDisabled] = useState(false);
     const [flips, setFlips] = useState(0);
-    const [isRunning, setIsRunning] = useState(true);
     const [modalShow, setModalShow] = useState(false);
-
-    const cards = useMemo(() => initDeck(settings), [settings]);
+    const [cards, setCards] = useState<ICard[]>([]);
 
     useEffect(() => {
-        if (solved.length === 16) {
-            setIsRunning(false);
+        setCards(initDeck(settings));
+    }, [settings]);
+
+    useEffect(() => {
+        if (solved.length === 12) {
             setModalShow(true);
         }
     }, [solved]);
@@ -38,8 +37,8 @@ const GamePageContainer = (props: IProps) => {
     },[flipped]);
 
     const isMatch = useCallback((id: number) => {
-        const clickedCard = cards.find((card) => card.id === id);
-        const flippedCard = cards.find((card) => flipped[0] === card.id);
+        const clickedCard = cards.find((card) => card.id === id) as ICard;
+        const flippedCard = cards.find((card) => flipped[0] === card.id) as ICard;
         return flippedCard.type === clickedCard.type;
     }, [cards, flipped]);
 
@@ -84,12 +83,21 @@ const GamePageContainer = (props: IProps) => {
         }
     }, [ flipped, solved, isMatch, sameCardClicked]);
 
+    const handleRestart = useCallback(() => {
+        setCards(initDeck(settings));
+        setFlipped([]);
+        setSolved([]);
+        setDisabled(false);
+        setFlips(0);
+        setModalShow(false);
+    },[settings]);
+
     return (
         <>
             <main className={classes.gameContainer}>
                 <div className={classes.stats}>
-                    <Link to={"/game"}><span className={classes.timeAndFlips}>Restart Game</span></Link>
-                    <span className={classes.timeAndFlips}>Flips: {flips}</span>
+                    <button onClick={handleRestart}><span className={classes.restartAndFlips}>Restart Game</span></button>
+                    <span className={classes.restartAndFlips}>Flips: {flips}</span>
                 </div>
                 <div className={classes.cardsContainer}>
                     <Board
@@ -101,7 +109,7 @@ const GamePageContainer = (props: IProps) => {
                     />
                 </div>
                 <div>
-                    {modalShow && <FinalModal flips={flips} />}
+                    {modalShow && <FinalModal open={modalShow} flips={flips} />}
                 </div>
             </main>
         </>
@@ -113,8 +121,10 @@ const useStyles = makeStyles((theme: Theme) =>
     gameContainer:{
         display: 'flex',
         flexDirection: 'column',
-
+        height: 'calc(100vh - 150px)',
+        overflowY: 'auto',
         paddingBottom: '1rem',
+
         [theme.breakpoints.up("md")]: {
             padding: '0 9rem',
         },
@@ -136,7 +146,7 @@ const useStyles = makeStyles((theme: Theme) =>
             marginBottom: '10px',
         }
     },
-    timeAndFlips:{
+    restartAndFlips:{
         color: '#01c5f1',
         fontFamily: 'Hachi Maru Pop',
         [theme.breakpoints.up("lg")]: {
@@ -154,10 +164,9 @@ const useStyles = makeStyles((theme: Theme) =>
         display: 'flex',
         justifyContent: 'center',
     },
-
     }),
 );
-const initDeck = (settings: ISettings) => {
+const initDeck = (settings: ISettings): ICard[] => {
     let id = 0;
     let cards: any[] = [];
 
@@ -168,7 +177,7 @@ const initDeck = (settings: ISettings) => {
     } else {
         cards = ['siam','whcat','rusg','tree','kun','eyes'];
     }
-    cards = cards.reduce((acc: any, type: string) => {
+    cards = cards.reduce((acc: ICard[], type: string) => {
         return [...acc, {id: id++, type}, {id: id++, type}];
     }, []);
 

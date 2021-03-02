@@ -7,7 +7,6 @@ import App from './App';
 import {Provider} from 'react-redux';
 import './index.css';
 import {rootReducer} from './reducers';
-// import * as serviceWorker from './serviceWorker';
 
 const store = createStore(rootReducer, composeWithDevTools(
     applyMiddleware(thunkMiddleware),

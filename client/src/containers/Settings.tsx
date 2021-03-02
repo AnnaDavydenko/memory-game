@@ -1,4 +1,4 @@
-import React, {FC, useState, useCallback} from 'react';
+import React, {FC, useState, useCallback, useEffect} from 'react';
 import {makeStyles} from "@material-ui/core";
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Switch, { SwitchClassKey, SwitchProps } from '@material-ui/core/Switch';
@@ -16,7 +16,7 @@ import {connect} from "react-redux";
 import {updateSettingsThunk} from "../thunks/settings";
 
 interface IRedux {
-    storageSettings: ISettings;
+    settings: ISettings;
 }
 
 interface IDispatch {
@@ -38,11 +38,11 @@ const SOUND_TYPES = {
 };
 
 const SettingsContainer: FC<IProps> = (props: IProps) => {
+    const {settings, onUpdateSettings} = props;
+
     const classes = useStyles();
 
-    const {storageSettings, onUpdateSettings} = props;
-
-    const [settings, setSettings] = useState<ISettings>(storageSettings);
+    const [registered, setRegistered] = useState(false);
 
     const handleChangeFullScreen = useCallback((event: React.ChangeEvent<HTMLInputElement>, fullScreenValue: boolean) => {
         if (fullScreenValue) {
@@ -51,15 +51,30 @@ const SettingsContainer: FC<IProps> = (props: IProps) => {
             document.exitFullscreen();
         }
         settings.fullScreen = fullScreenValue;
-        setSettings({...settings});
         onUpdateSettings(settings);
     }, [settings, onUpdateSettings]);
+
+    const handleKeyPress = useCallback((e: KeyboardEvent) => {
+        if (e.key === "Escape" && settings.fullScreen) {
+            handleChangeFullScreen(e as any, false);
+        }
+    }, [settings.fullScreen, handleChangeFullScreen]);
+
+
+    useEffect(() => {
+        if (!registered) {
+            setRegistered(true);
+            document.addEventListener("keyup", handleKeyPress);
+        }
+        return () => {
+            document.removeEventListener("keyup", handleKeyPress);
+        }
+    }, [handleKeyPress]);
 
     const handleChangeVolumeSound = useCallback((event: any, newValue: number | number[]) => {
         const audio = document.querySelector("#buttonSound") as HTMLAudioElement;
         audio.volume = (newValue as number) / 100;
         settings.volumeSounds = newValue as number;
-        setSettings({ ...settings });
         onUpdateSettings(settings);
     }, [settings, onUpdateSettings]);
 
@@ -67,7 +82,6 @@ const SettingsContainer: FC<IProps> = (props: IProps) => {
         const audio = document.querySelector("#music") as HTMLAudioElement;
         audio.volume = (newValue as number) / 100;
         settings.volumeMusic = newValue as number;
-        setSettings({ ...settings });
         onUpdateSettings(settings);
     },[settings, onUpdateSettings]);
 
@@ -91,7 +105,6 @@ const SettingsContainer: FC<IProps> = (props: IProps) => {
             settings.enableSounds = !settings.enableSounds;
         }
 
-        setSettings({ ...settings });
         onUpdateSettings(settings);
     }, [settings, onUpdateSettings]);
 
@@ -110,14 +123,13 @@ const SettingsContainer: FC<IProps> = (props: IProps) => {
                     </Grid>
 
                     <Grid container justify='space-between' className={classes.gridContainer} >
-                        <Grid item className={classes.settingItem} >
-                            <span className={classes.span}>Enable Music</span>
-                            <PlaySoundButton type={SOUND_TYPES.MUSIC} enabled={settings.enableMusic} onClick={handleChangeSound}/>
-                        </Grid>
-
                         <Grid item className={classes.settingItem}>
                             <span className={classes.span}>Enable Sounds</span>
                             <PlaySoundButton type={SOUND_TYPES.SOUND} enabled={settings.enableSounds} onClick={handleChangeSound}/>
+                        </Grid>
+                        <Grid item className={classes.settingItem} >
+                            <span className={classes.span}>Enable Music</span>
+                            <PlaySoundButton type={SOUND_TYPES.MUSIC} enabled={settings.enableMusic} onClick={handleChangeSound}/>
                         </Grid>
                     </Grid>
                 <Grid container justify='space-between'>
@@ -243,7 +255,7 @@ const IOSSwitch = withStyles((theme: Theme) =>
 });
 
 const mapStateToProps = (state: IState) => ({
-    storageSettings: state.settings.settings,
+    settings: state.settings.settings,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
