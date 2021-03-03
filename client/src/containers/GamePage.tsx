@@ -5,6 +5,7 @@ import {ICard, ISettings, IState} from "../common/types";
 import {shuffle} from "../utils/gameUtils";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import {connect} from "react-redux";
+import {SOUND_TYPES} from "./Settings";
 
 interface IProps {
     settings: ISettings;
@@ -24,13 +25,17 @@ const GamePageContainer = (props: IProps) => {
 
     useEffect(() => {
         setCards(initDeck(settings));
-    }, [settings]);
+    },[]);
 
     useEffect(() => {
+        const audio = document.querySelector("#win") as HTMLAudioElement;
         if (solved.length === 12) {
             setModalShow(true);
+            if (settings.enableMusic) {
+                audio.play();
+            }
         }
-    }, [solved]);
+    }, [settings.enableMusic, solved]);
 
     const sameCardClicked = useCallback((id: number) => {
         return flipped.includes(id);
@@ -84,19 +89,38 @@ const GamePageContainer = (props: IProps) => {
     }, [ flipped, solved, isMatch, sameCardClicked]);
 
     const handleRestart = useCallback(() => {
+        const audio = document.querySelector("#buttonSound") as HTMLAudioElement;
         setCards(initDeck(settings));
         setFlipped([]);
         setSolved([]);
         setDisabled(false);
         setFlips(0);
         setModalShow(false);
+        if(settings.enableSounds){
+            audio.play();
+        }
     },[settings]);
+
+    const handleKeyPress = useCallback((e: KeyboardEvent) => {
+        if (e.key === "r" || e.key === "к") {
+            handleRestart();
+        }
+    }, [handleRestart, settings.enableSounds]);
+
+    useEffect(() => {
+
+        document.addEventListener("keyup", handleKeyPress);
+
+        return () => {
+            document.removeEventListener("keyup", handleKeyPress);
+        }
+    }, [handleKeyPress]);
 
     return (
         <>
             <main className={classes.gameContainer}>
                 <div className={classes.stats}>
-                    <button onClick={handleRestart}><span className={classes.restartAndFlips}>Restart Game</span></button>
+                    <button onClick={handleRestart} className={classes.restartAndFlips}>Restart Game</button>
                     <span className={classes.restartAndFlips}>Flips: {flips}</span>
                 </div>
                 <div className={classes.cardsContainer}>
@@ -147,8 +171,12 @@ const useStyles = makeStyles((theme: Theme) =>
         }
     },
     restartAndFlips:{
-        color: '#01c5f1',
+        color: '#3288dc',
         fontFamily: 'Hachi Maru Pop',
+        background: 'transparent',
+        '&:hover':{
+            color: '#01c5f1',
+        },
         [theme.breakpoints.up("lg")]: {
             fontSize: '3rem',
         },
@@ -157,7 +185,8 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         [theme.breakpoints.down("sm")]: {
             fontSize: '1.5rem',
-        }
+        },
+
     },
     cardsContainer:{
         marginTop: '3rem',

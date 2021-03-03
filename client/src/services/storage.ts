@@ -7,12 +7,12 @@ export class Storage {
   constructor() {
     this.storage = 'settings';
     if (!window.localStorage.getItem(this.storage)) {
-      const data = Storage.getDefaultData();
+      const data = this.getDefaultData();
       window.localStorage.setItem(this.storage, JSON.stringify(data));
     }
   }
 
-  static getDefaultData(): ISettings {
+  getDefaultData(): ISettings {
     const settings = {
       fullScreen: false,
       enableSounds: false,
@@ -24,7 +24,7 @@ export class Storage {
     return settings;
   }
 
-  getSettings() {
+  getSettings(): ISettings {
     return JSON.parse(window.localStorage.getItem(this.storage) as string);
   }
 

@@ -5,7 +5,6 @@ import Modal from "../components/Modal";
 
 const Menu:FC = () => {
     return (
-        <main>
             <Modal title='Welcome'>
                 <Grid container
                       direction="column"
@@ -17,7 +16,6 @@ const Menu:FC = () => {
                     <LinkButton to={"/settings"} text={"Settings"}/>
                 </Grid>
             </Modal>
-        </main>
     );
 };
 export default Menu;

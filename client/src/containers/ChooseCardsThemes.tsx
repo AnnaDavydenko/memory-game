@@ -51,6 +51,10 @@ const ChooseCardsThemesContainer:FC<IProps> = (props: IProps) => {
     },[]);
 
     const handleChangeTheme = useCallback((cardItem: ICardItem) => () => {
+        const audio = document.querySelector("#buttonSound") as HTMLAudioElement;
+        if(settings.enableSounds){
+            audio.play();
+        }
         settings.cardsTheme = cardItem.type;
         setActiveCardId(cardItem.id);
         onUpdateSettings(settings);
@@ -72,14 +76,12 @@ const ChooseCardsThemesContainer:FC<IProps> = (props: IProps) => {
         });
     };
     useEffect(() => {
-        console.log(config);
         preloadImage();
     }, []);
 
     return (
         <>
             {(loading) ? (<Loader/>) : (
-                <main>
                     <Modal title='Choose cards'>
                         <div className={classes.cardsContainer}>
                             {CARDS.map((cardItem, index) => (
@@ -98,7 +100,6 @@ const ChooseCardsThemesContainer:FC<IProps> = (props: IProps) => {
                             <LinkButton to={"/"} text={"Back"}/>
                         </Grid>
                     </Modal>
-                </main>
             )}
         </>
     );

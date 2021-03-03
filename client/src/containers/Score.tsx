@@ -29,7 +29,6 @@ const ScoreContainer = (props: IProps) => {
     return (
         <>
             {(isScoresFetching) ? (<Loader/>) : (
-                <main>
                     <Modal title='High Score'>
                         <div className={classes.absolute}>
                             <table className={classes.scroll}>
@@ -55,8 +54,6 @@ const ScoreContainer = (props: IProps) => {
                         </div>
                         <LinkButton to={"/"} text={"Menu"}/>
                     </Modal>
-
-                </main>
             )}
         </>
     );

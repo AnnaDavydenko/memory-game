@@ -20,10 +20,14 @@ interface IRedux {
 }
 
 interface IDispatch {
-    onUpdateSettings: (settings: ISettings) => void;
+    updateSettings: (settings: ISettings, updatedSettings: ISettings) => void;
 }
 
-type IProps = IRedux & IDispatch;
+interface ISettingsProps {
+    handleChangeSound: (type: string) => void;
+}
+
+type IProps = IRedux & IDispatch & ISettingsProps;
 
 interface Styles extends Partial<Record<SwitchClassKey, string>> {
     focusVisible?: string;
@@ -32,137 +36,105 @@ interface Props extends SwitchProps {
     classes: Styles;
 }
 
-const SOUND_TYPES = {
+export const SOUND_TYPES = {
     MUSIC: 'music',
     SOUND: 'sound',
 };
 
 const SettingsContainer: FC<IProps> = (props: IProps) => {
-    const {settings, onUpdateSettings} = props;
+    const {settings, updateSettings} = props;
 
     const classes = useStyles();
 
-    const [registered, setRegistered] = useState(false);
-
-    const handleChangeFullScreen = useCallback((event: React.ChangeEvent<HTMLInputElement>, fullScreenValue: boolean) => {
-        if (fullScreenValue) {
-            document.documentElement.requestFullscreen();
-        } else {
-            document.exitFullscreen();
-        }
-        settings.fullScreen = fullScreenValue;
-        onUpdateSettings(settings);
-    }, [settings, onUpdateSettings]);
-
-    const handleKeyPress = useCallback((e: KeyboardEvent) => {
-        if (e.key === "Escape" && settings.fullScreen) {
-            handleChangeFullScreen(e as any, false);
-        }
-    }, [settings.fullScreen, handleChangeFullScreen]);
-
-
-    useEffect(() => {
-        if (!registered) {
-            setRegistered(true);
-            document.addEventListener("keyup", handleKeyPress);
-        }
-        return () => {
-            document.removeEventListener("keyup", handleKeyPress);
-        }
-    }, [handleKeyPress]);
-
-    const handleChangeVolumeSound = useCallback((event: any, newValue: number | number[]) => {
-        const audio = document.querySelector("#buttonSound") as HTMLAudioElement;
-        audio.volume = (newValue as number) / 100;
-        settings.volumeSounds = newValue as number;
-        onUpdateSettings(settings);
-    }, [settings, onUpdateSettings]);
-
-    const handleChangeVolumeMusic = useCallback((event: any, newValue: number | number[]) => {
-        const audio = document.querySelector("#music") as HTMLAudioElement;
-        audio.volume = (newValue as number) / 100;
-        settings.volumeMusic = newValue as number;
-        onUpdateSettings(settings);
-    },[settings, onUpdateSettings]);
+    const handleChangeFullScreen = useCallback(() => {
+        const updatedSettings = {...settings};
+        updatedSettings.fullScreen = !updatedSettings.fullScreen;
+        updateSettings(settings, updatedSettings);
+    }, [settings, updateSettings]);
 
     const handleChangeSound = useCallback((type: string) => {
+        const updatedSettings = {...settings};
+        if (type === SOUND_TYPES.SOUND) {
+            updatedSettings.enableSounds = !updatedSettings.enableSounds;
+        } else {
+            updatedSettings.enableMusic = !updatedSettings.enableMusic;
+        }
+        updateSettings(settings, updatedSettings);
+    }, [settings, updateSettings]);
+
+    const handleChangeVolumeSound = useCallback((event: any, newValue: number | number[]) => {
+        const updatedSettings = {...settings};
+        const audio = document.querySelector("#buttonSound") as HTMLAudioElement;
+        audio.play();
+        audio.volume = (newValue as number) / 100;
+        updatedSettings.volumeSounds = newValue as number;
+        updateSettings(settings, updatedSettings);
+    }, [settings, updateSettings]);
+
+    const handleChangeVolumeMusic = useCallback((event: any, newValue: number | number[]) => {
+        const updatedSettings = {...settings};
         const audio = document.querySelector("#music") as HTMLAudioElement;
         const sound = document.querySelector("#buttonSound") as HTMLAudioElement;
-        if (type === SOUND_TYPES.MUSIC) {
-            if (!settings.enableMusic) {
-                audio.play();
-            } else {
-                audio.pause();
-            }
-            settings.enableMusic = !settings.enableMusic;
-        }
-        if (type === SOUND_TYPES.SOUND) {
-            if (!settings.enableSounds) {
-                sound.play();
-            } else {
-                sound.pause();
-            }
-            settings.enableSounds = !settings.enableSounds;
-        }
-
-        onUpdateSettings(settings);
-    }, [settings, onUpdateSettings]);
+        sound.play();
+        sound.volume = (newValue as number) / 100;
+        audio.volume = (newValue as number) / 100;
+        updatedSettings.volumeMusic = newValue as number;
+        updateSettings(settings, updatedSettings);
+    },[settings, updateSettings]);
 
     return (
-        <main>
-            <Modal title='Settings'>
-                <Grid container direction="column" className={classes.settingsContainer}>
+        <Modal title='Settings'>
+            <Grid container direction="column" className={classes.settingsContainer}>
+                <Grid item className={classes.settingItem}>
+                    <span className={classes.span}>Full Screen</span>
+                    <IOSSwitch
+                        checked={settings.fullScreen}
+                        onChange={handleChangeFullScreen}
+                        name="fullScreenValue"
+                        inputProps={{ 'aria-label': 'secondary checkbox' }}
+                    />
+                </Grid>
+
+                <Grid container justify='space-between' className={classes.gridContainer} >
                     <Grid item className={classes.settingItem}>
-                        <span className={classes.span}>Full Screen</span>
-                        <IOSSwitch
-                            checked={settings.fullScreen}
-                            onChange={handleChangeFullScreen}
-                            name="fullScreenValue"
-                            inputProps={{ 'aria-label': 'secondary checkbox' }}
-                        />
+                        <span className={classes.span}>Enable Sounds</span>
+                        <PlaySoundButton type={SOUND_TYPES.SOUND} enabled={settings.enableSounds} onClick={handleChangeSound}/>
                     </Grid>
-
-                    <Grid container justify='space-between' className={classes.gridContainer} >
-                        <Grid item className={classes.settingItem}>
-                            <span className={classes.span}>Enable Sounds</span>
-                            <PlaySoundButton type={SOUND_TYPES.SOUND} enabled={settings.enableSounds} onClick={handleChangeSound}/>
-                        </Grid>
-                        <Grid item className={classes.settingItem} >
-                            <span className={classes.span}>Enable Music</span>
-                            <PlaySoundButton type={SOUND_TYPES.MUSIC} enabled={settings.enableMusic} onClick={handleChangeSound}/>
-                        </Grid>
-                    </Grid>
-                <Grid container justify='space-between'>
-                    <Grid container className={classNames(classes.sliderContainer, classes.settingItem)}>
-                        <span className={classes.span}>Sounds</span>
-                        <Grid item className={classes.icon}>
-                           <VolumeDown />
-                        </Grid>
-                        <Grid item xs>
-                            <Slider className={classes.slider} valueLabelDisplay="on" value={settings.volumeSounds} onChange={handleChangeVolumeSound} />
-                        </Grid>
-                        <Grid item className={classes.icon}>
-                            <VolumeUp />
-                        </Grid>
-                    </Grid>
-
-                    <Grid container className={classNames(classes.sliderContainer, classes.settingItem)}>
-                        <span className={classes.span}>Music</span>
-                        <Grid item className={classes.icon}>
-                            <VolumeDown />
-                        </Grid>
-                        <Grid item xs>
-                            <Slider className={classes.slider} valueLabelDisplay="on" value={settings.volumeMusic} onChange={handleChangeVolumeMusic} />
-                        </Grid>
-                        <Grid item className={classes.icon}>
-                            <VolumeUp />
-                        </Grid>
+                    <Grid item className={classes.settingItem} >
+                        <span className={classes.span}>Enable Music</span>
+                        <PlaySoundButton type={SOUND_TYPES.MUSIC} enabled={settings.enableMusic} onClick={handleChangeSound}/>
                     </Grid>
                 </Grid>
+            <Grid container justify='space-between'>
+                <Grid container className={classNames(classes.sliderContainer, classes.settingItem)}>
+                    <span className={classes.span}>Sounds</span>
+                    <Grid item className={classes.icon}>
+                       <VolumeDown />
+                    </Grid>
+                    <Grid item xs>
+                        <Slider className={classes.slider} valueLabelDisplay="on" value={settings.volumeSounds} onChange={handleChangeVolumeSound} />
+                    </Grid>
+                    <Grid item className={classes.icon}>
+                        <VolumeUp />
+                    </Grid>
                 </Grid>
-                <LinkButton to={"/"} text={"Back"} />
-            </Modal>
-        </main>
+
+                <Grid container className={classNames(classes.sliderContainer, classes.settingItem)}>
+                    <span className={classes.span}>Music</span>
+                    <Grid item className={classes.icon}>
+                        <VolumeDown />
+                    </Grid>
+                    <Grid item xs>
+                        <Slider className={classes.slider} valueLabelDisplay="on" value={settings.volumeMusic} onChange={handleChangeVolumeMusic} />
+                    </Grid>
+                    <Grid item className={classes.icon}>
+                        <VolumeUp />
+                    </Grid>
+                </Grid>
+            </Grid>
+            </Grid>
+            <LinkButton to={"/"} text={"Back"} />
+        </Modal>
     );
 };
 
@@ -259,9 +231,9 @@ const mapStateToProps = (state: IState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-    onUpdateSettings: (settings: ISettings) => {
+    updateSettings: (settings: ISettings, updatedSettings: ISettings) =>{
         // @ts-ignore
-        dispatch(updateSettingsThunk(settings));
+        dispatch(updateSettingsThunk(settings, updatedSettings));
     }
 });
 
