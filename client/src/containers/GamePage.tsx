@@ -5,7 +5,6 @@ import {ICard, ISettings, IState} from "../common/types";
 import {shuffle} from "../utils/gameUtils";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import {connect} from "react-redux";
-import {SOUND_TYPES} from "./Settings";
 
 interface IProps {
     settings: ISettings;
@@ -16,8 +15,9 @@ const GamePageContainer = (props: IProps) => {
 
     const {settings} = props;
 
+    const [autoPlay, setAutoPlay] = useState<boolean>(false);
     const [flipped, setFlipped] = useState<number[]>([]);
-    const [solved, setSolved] = useState<any[]>([]);
+    const [solved, setSolved] = useState<number[]>([]);
     const [disabled, setDisabled] = useState(false);
     const [flips, setFlips] = useState(0);
     const [modalShow, setModalShow] = useState(false);
@@ -31,6 +31,7 @@ const GamePageContainer = (props: IProps) => {
         const audio = document.querySelector("#win") as HTMLAudioElement;
         if (solved.length === 12) {
             setModalShow(true);
+            setAutoPlay(false);
             if (settings.enableMusic) {
                 audio.play();
             }
@@ -47,7 +48,7 @@ const GamePageContainer = (props: IProps) => {
         return flippedCard.type === clickedCard.type;
     }, [cards, flipped]);
 
-    const onClick = useCallback((id: number) => {
+    const handleCardAction = useCallback((id: number) => {
         setDisabled(true);
 
         // If no cards flipped
@@ -86,7 +87,11 @@ const GamePageContainer = (props: IProps) => {
                 }, 2000);
             }
         }
-    }, [ flipped, solved, isMatch, sameCardClicked]);
+    }, [flipped, solved, isMatch, sameCardClicked]);
+
+    const onClick = useCallback((id: number) => {
+        handleCardAction(id);
+    }, [handleCardAction]);
 
     const handleRestart = useCallback(() => {
         const audio = document.querySelector("#buttonSound") as HTMLAudioElement;
@@ -102,19 +107,44 @@ const GamePageContainer = (props: IProps) => {
     },[settings]);
 
     const handleKeyPress = useCallback((e: KeyboardEvent) => {
-        if (e.key === "r" || e.key === "к") {
+        if (!modalShow && (e.altKey && (e.key === "r" || e.key === "к"))) {
             handleRestart();
         }
-    }, [handleRestart, settings.enableSounds]);
+    }, [modalShow, handleRestart]);
 
     useEffect(() => {
-
         document.addEventListener("keyup", handleKeyPress);
-
         return () => {
             document.removeEventListener("keyup", handleKeyPress);
         }
     }, [handleKeyPress]);
+
+    const handleAutoPlay = useCallback(() => {
+        setAutoPlay(true);
+        setFlipped([]);
+        const unresolved = cards.filter((item) => !solved.includes(item.id));
+        const cardItem = unresolved[0];
+        const itemPair = unresolved.find((item, index) => item.type === cardItem?.type && index !== 0) as ICard;
+        if (cardItem && !solved.includes(cardItem?.id) && !solved.includes(itemPair?.id)) {
+            setSolved([...solved, cardItem.id, itemPair.id]);
+        }
+    },[solved, cards]);
+
+    const handleAutoplayClick = useCallback(() => {
+        const audio = document.querySelector("#buttonSound") as HTMLAudioElement;
+        if (settings.enableSounds) {
+            audio.play();
+        }
+        handleAutoPlay();
+    }, [settings, handleAutoPlay]);
+
+    useEffect(() => {
+        if (autoPlay && solved.length < 12) {
+            setTimeout(()=> {
+                handleAutoPlay();
+            }, 1000);
+        }
+    }, [solved, solved.length, autoPlay, handleAutoPlay]);
 
     return (
         <>
@@ -122,6 +152,7 @@ const GamePageContainer = (props: IProps) => {
                 <div className={classes.stats}>
                     <button onClick={handleRestart} className={classes.restartAndFlips}>Restart Game</button>
                     <span className={classes.restartAndFlips}>Flips: {flips}</span>
+                    <button onClick={handleAutoplayClick} className={classes.restartAndFlips}>Auto Play</button>
                 </div>
                 <div className={classes.cardsContainer}>
                     <Board
@@ -165,6 +196,7 @@ const useStyles = makeStyles((theme: Theme) =>
         width: '100%',
         display: 'flex',
         justifyContent: 'space-between',
+        alignItems: 'center',
     "& svg": {
             verticalAlign: 'middle',
             marginBottom: '10px',
@@ -188,9 +220,10 @@ const useStyles = makeStyles((theme: Theme) =>
         },
 
     },
-    cardsContainer:{
-        marginTop: '3rem',
+    cardsContainer: {
+        height: 'calc(100vh - 146px)',
         display: 'flex',
+        alignItems: 'center',
         justifyContent: 'center',
     },
     }),
