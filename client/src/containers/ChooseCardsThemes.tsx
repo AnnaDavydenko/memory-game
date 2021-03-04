@@ -16,7 +16,7 @@ interface IRedux {
 }
 
 interface IDispatch {
-    onUpdateSettings: (settings: ISettings) => void;
+    updateSettings: (settings: ISettings, updatedSettings: ISettings) => void;
 }
 
 type IProps = IRedux & IDispatch;
@@ -31,7 +31,7 @@ interface ICardItem {
 }
 
 const ChooseCardsThemesContainer:FC<IProps> = (props: IProps) => {
-    const {settings, onUpdateSettings} = props;
+    const {settings, updateSettings} = props;
     const classes = useStyles();
 
     const [activeCardId, setActiveCardId] = useState<string>("");
@@ -49,16 +49,16 @@ const ChooseCardsThemesContainer:FC<IProps> = (props: IProps) => {
             type: CARD_THEMES.WINTER,
         },]
     },[]);
-
     const handleChangeTheme = useCallback((cardItem: ICardItem) => () => {
         const audio = document.querySelector("#buttonSound") as HTMLAudioElement;
-        if(settings.enableSounds){
+        const updatedSettings = {...settings};
+        if(updatedSettings.enableSounds){
             audio.play();
         }
-        settings.cardsTheme = cardItem.type;
+        updatedSettings.cardsTheme = cardItem.type;
         setActiveCardId(cardItem.id);
-        onUpdateSettings(settings);
-    }, [settings, onUpdateSettings]);
+        updateSettings(settings, updatedSettings);
+    }, [settings, updateSettings]);
 
     const preloadImage = () => {
         setLoading(true);
@@ -136,11 +136,12 @@ const mapStateToProps = (state: IState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-    onUpdateSettings: (settings: ISettings) => {
+    updateSettings: (settings: ISettings, updatedSettings: ISettings) =>{
         // @ts-ignore
-        dispatch(updateSettingsThunk(settings));
+        dispatch(updateSettingsThunk(settings, updatedSettings));
     }
 });
+
 
 const ChooseCardsThemes = connect(mapStateToProps, mapDispatchToProps)(ChooseCardsThemesContainer);
 export default ChooseCardsThemes;

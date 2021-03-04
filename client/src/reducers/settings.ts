@@ -1,4 +1,4 @@
-import {UPDATE_FULLSCREEN, UPDATE_SETTINGS} from "../actions/actionTypes";
+import {UPDATE_SETTINGS} from "../actions/actionTypes";
 import {IAction, ISettings} from "../common/types";
 import {Storage} from "../services/storage";
 
@@ -16,11 +16,6 @@ export const settings = (state: ISettingsState = initialState, action: IAction) 
     switch (action.type) {
 
         case UPDATE_SETTINGS:
-            return {
-                settings: {...action.payload},
-            };
-
-        case UPDATE_FULLSCREEN:
             return {
                 settings: {...action.payload},
             };

@@ -20,7 +20,7 @@ const Rules:FC = () => {
 
                 <Grid container justify='space-between'>
                     <div className={classes.hotKeyText}>
-                        <span className={classes.hotKeyIcon}><span className={classes.alt}>Alt+</span>f</span>
+                        <span className={classes.hotKeyIcon}><span className={classes.alt}>Alt+</span>x</span>
                         Turn on full screen
                     </div>
                     <div className={classes.hotKeyText}>

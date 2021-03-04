@@ -37,7 +37,7 @@ const AppContainer: FC<IProps> = (props: IProps) => {
         if (e.altKey &&  (e.key === "m" || e.key === "ь")) {
             updatedSettings.enableMusic = !updatedSettings.enableMusic;
         }
-        if (e.altKey &&  (e.key === "f" || e.key === "а")) {
+        if (e.altKey &&  (e.key === "x" || e.key === "ч")) {
             updatedSettings.fullScreen = !updatedSettings.fullScreen;
         }
         if (e.altKey &&  (e.key === "d" || e.key === "в")) {
@@ -74,9 +74,6 @@ const AppContainer: FC<IProps> = (props: IProps) => {
                         <Route path='/gameRules' component={Rules}/>
                         <Route path='/score' component={Score}/>
                         <Route path='/settings' component={Settings}/>
-                        {/*<Route path='/settings'>*/}
-                        {/*    <Settings handleChangeSound={handleChangeSound}/>*/}
-                        {/*</Route>*/}
                         <Route path='/game' component={GamePage}/>
                     </Switch>
                     <Footer/>
