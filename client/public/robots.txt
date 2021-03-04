@@ -1,0 +1,3 @@
+# https://www.wintertxt.org/wintertxt.html
+User-agent: *
+Disallow:
